@@ -20,6 +20,7 @@
 #     server = SocketServer.UDPServer((HOST, PORT), MyUDPHandler)
 #     server.serve_forever()
 import SocketServer, threading, time
+import socket
 
 class ThreadedUDPRequestHandler(SocketServer.BaseRequestHandler):
 
