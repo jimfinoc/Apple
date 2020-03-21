@@ -104,14 +104,14 @@ class CharacterGraphic(object):
     def move(self):
         if self.alive:
             x1, y1, x2, y2 = self.canvas.bbox(self.id)
-            if x2 > class_screenWidth:
+            if x2 > self.class_screenWidth:
                 # self.vx = 0
                 self.vx = random.randint(-5,-4)
             if x1 < 0:
                 # self.vx = 0
                 self.vx = random.randint(4,5)
 
-            if y2 > class_screenHeight:
+            if y2 > self.class_screenHeight:
                 # self.vy = 0
                 self.vy = random.randint(-5,-4)
 
@@ -203,6 +203,8 @@ class Application(object):
         self.master.after(0, self.animation)
 
     def animation(self):
+        print ""
+        print ""
         print "-------------------------"
         # print self.aliens
         for alien in self.aliens:
