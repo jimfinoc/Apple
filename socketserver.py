@@ -34,8 +34,10 @@ class ThreadedUDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):
     pass
 
 if __name__ == "__main__":
-    HOST, PORT = "raspigames.local", 60106
-    # HOST, PORT = "10.0.1.56", 60106
+    # HOST, PORT = "raspigames.local", 60106
+    ipaddress = socket.gethostbyname('raspigames.local')
+    # HOST, PORT = "10.0.1.184", 60106
+    HOST, PORT = ipaddress, 10996
 
     server = ThreadedUDPServer((HOST, PORT), ThreadedUDPRequestHandler)
 
