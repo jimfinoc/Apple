@@ -39,6 +39,8 @@ if __name__ == "__main__":
     ipaddress = socket.gethostbyname('raspigames.local')
     # HOST, PORT = "10.0.1.184", 60106
     HOST, PORT = ipaddress, 10996
+    print "Host: ",HOST
+    print "Port: ",PORT
 
     server = ThreadedUDPServer((HOST, PORT), ThreadedUDPRequestHandler)
 
