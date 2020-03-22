@@ -242,6 +242,8 @@ class CharacterGraphic(object):
 
 # ____________________________________________________________________________
 class Application(object):
+    joystick = []
+    connected = pygame.joystick.get_count()
     def __init__(self, master, **kwargs):
         self.master = master
         if "screenHeight" in kwargs:
@@ -252,6 +254,20 @@ class Application(object):
             screenWidth = kwargs["screenWidth"]
         else:
             screenWidth = 400
+        for each in range(connected):
+            joystick.append( pygame.joystick.Joystick(each) )
+            joystick[each].init()
+            axes = joystick[each].get_numaxes()
+            buttons = joystick[each].get_numbuttons()
+            hats = joystick[each].get_numhats()
+            balls = joystick[each].get_numballs()
+            print "axes"
+            print (axes)
+            print "buttons"
+            print (buttons)
+            print "hats"
+            print (hats)
+
 
         self.canvas = tk.Canvas(self.master, width=screenWidth, height=screenHeight)
         # self.canvas.pack()
