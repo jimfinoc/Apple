@@ -303,7 +303,8 @@ class Application(object):
         for ship in self.ships:
             ship.move()
             if (self.timer%5 == 0):
-                ship.turn(1)
+                pass
+                # ship.turn(1)
             health = ship.returnHealth()
             if health > 0:
                 health = 100 - (self.timer%1000) / 10 - 1
@@ -324,11 +325,13 @@ class Application(object):
         #---------------------------------------
         for each in range(Application.connected):
             print "Joystick", each ,":"
-            print Application.joystick[each].get_axis(0)
+            turn = int (Application.joystick[each].get_axis(0))
+            print turn
             print Application.joystick[each].get_axis(1)
             for eachbutton in range(Application.buttons):
                 button = self.joystick[each].get_button(eachbutton)
                 print eachbutton, ":",button, "    ",
+
             print ""
         #---------------------------------------
         print "end of round",self.timer
