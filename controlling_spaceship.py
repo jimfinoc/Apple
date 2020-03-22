@@ -325,13 +325,19 @@ class Application(object):
         #---------------------------------------
         for each in range(Application.connected):
             print "Joystick", each ,":"
-            turn = int (Application.joystick[each].get_axis(0))
+            turn = Application.joystick[each].get_axis(0)
             print turn
-            print Application.joystick[each].get_axis(1)
+            if (turn > .1 ):
+                turn = 1
+            elif (turn < -.1):
+                turn = -1
+            else:
+                turn = 0
+            self.ships[each].turn(turn)
+            # print Application.joystick[each].get_axis(1)
             for eachbutton in range(Application.buttons):
                 button = self.joystick[each].get_button(eachbutton)
                 print eachbutton, ":",button, "    ",
-
             print ""
         #---------------------------------------
         print "end of round",self.timer
