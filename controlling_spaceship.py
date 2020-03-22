@@ -242,6 +242,7 @@ class CharacterGraphic(object):
 
 # ____________________________________________________________________________
 class Application(object):
+    pygame = None
     pygame.init()
     pygame.joystick.init()
     connected = pygame.joystick.get_count()
