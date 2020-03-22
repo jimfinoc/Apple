@@ -256,7 +256,7 @@ class Application(object):
             screenWidth = kwargs["screenWidth"]
         else:
             screenWidth = 400
-        for each in range(connected):
+        for each in range(self.connected):
             self.joystick.append( pygame.joystick.Joystick(each) )
             self.joystick[each].init()
             axes = joystick[each].get_numaxes()
