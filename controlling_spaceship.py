@@ -242,8 +242,10 @@ class CharacterGraphic(object):
 
 # ____________________________________________________________________________
 class Application(object):
-    joystick = []
+    pygame.init()
+    pygame.joystick.init()
     connected = pygame.joystick.get_count()
+    print "you have", connected, "connected controllers"
     def __init__(self, master, **kwargs):
         self.master = master
         if "screenHeight" in kwargs:
@@ -339,10 +341,6 @@ class Application(object):
 
 # ____________________________________________________________________________
 if __name__== "__main__":
-    pygame.init()
-    pygame.joystick.init()
-    connected = pygame.joystick.get_count()
-    print "you have", connected, "connected controllers"
     root = tk.Tk()
     app = Application(root,screenWidth="1000",screenHeight="500")
     root.mainloop()
