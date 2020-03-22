@@ -164,7 +164,7 @@ class CharacterGraphic(object):
     #             self.canvas.itemconfig(self.HealthId2, start=one)
     #             self.canvas.itemconfig(self.HealthId2, extent=three)
 
-    def move(self):
+    def move(self,speed):
         if self.alive:
             # x1, y1, x2, y2 = self.canvas.bbox(self.id)
             # if x2 > self.class_screenWidth:
@@ -185,8 +185,8 @@ class CharacterGraphic(object):
             #     self.vy = 0
             #     self.vx = 0
 
-            self.vx = 1 * math.cos(self.angle)
-            self.vy = 1 * math.sin(self.angle)
+            self.vx = speed * math.cos(self.angle)
+            self.vy = speed * math.sin(self.angle)
 
 
             self.canvas.move(self.id, self.vx, self.vy)
@@ -301,7 +301,7 @@ class Application(object):
         print "-------------------------"
         # print self.ships
         for ship in self.ships:
-            ship.move()
+            # ship.move()
             if (self.timer%5 == 0):
                 pass
                 # ship.turn(1)
@@ -334,9 +334,13 @@ class Application(object):
             else:
                 turn = 0
             self.ships[each].turn(turn)
+            self.ships[each].move(1)
+            if self.joystick[each].get_button(0):
+                self.ships[each].move(5)
+
             # print Application.joystick[each].get_axis(1)
             for eachbutton in range(Application.buttons):
-                button = self.joystick[each].get_button(eachbutton)
+                button = Application.joystick[each].get_button(eachbutton)
                 print eachbutton, ":",button, "    ",
             print ""
         #---------------------------------------
