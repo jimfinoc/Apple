@@ -322,7 +322,7 @@ class Application(object):
         self.IncreaseTimer()
         pygame.event.pump()
         #---------------------------------------
-        for each in range(connected):
+        for each in range(Application.connected):
             print "Joystick", each ,":"
             print Application.joystick[each].get_axis(0)
             print Application.joystick[each].get_axis(1)
