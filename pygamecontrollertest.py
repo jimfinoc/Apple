@@ -20,6 +20,8 @@ for each in range(connected):
     print (axes)
     print "buttons"
     print (buttons)
+    print "hats"
+    print (hats)
 
 
 while True:
@@ -31,5 +33,5 @@ while True:
         # print joystick[each].get_axis(yAxisNum)
         for eachbutton in range(buttons):
             button = joystick[each].get_button(each)
-            print eachbutton, "each",button,
+            print eachbutton, ":",button,
         print ""
