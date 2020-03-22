@@ -336,6 +336,7 @@ class Application(object):
             self.ships[each].turn(turn)
             self.ships[each].move(1)
             if self.joystick[each].get_button(0):
+                print "speed up"
                 self.ships[each].move(5)
 
             # print Application.joystick[each].get_axis(1)
