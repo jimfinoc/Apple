@@ -254,10 +254,9 @@ class Application(object):
             screenWidth = kwargs["screenWidth"]
         else:
             screenWidth = 400
-        joystick = []
         for each in range(connected):
-            joystick.append( pygame.joystick.Joystick(each) )
-            joystick[each].init()
+            self.joystick.append( pygame.joystick.Joystick(each) )
+            self.joystick[each].init()
             axes = joystick[each].get_numaxes()
             buttons = joystick[each].get_numbuttons()
             hats = joystick[each].get_numhats()
@@ -321,10 +320,10 @@ class Application(object):
         #---------------------------------------
         for each in range(connected):
             print "Joystick", each ,":"
-            print joystick[each].get_axis(xAxisNum)
-            print joystick[each].get_axis(yAxisNum)
+            print self.joystick[each].get_axis(xAxisNum)
+            print self.joystick[each].get_axis(yAxisNum)
             for eachbutton in range(buttons):
-                button = joystick[each].get_button(eachbutton)
+                button = self.joystick[each].get_button(eachbutton)
                 print eachbutton, ":",button, "    ",
             print ""
         #---------------------------------------
