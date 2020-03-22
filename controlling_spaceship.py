@@ -326,7 +326,7 @@ class Application(object):
             print "Joystick", each ,":"
             print Application.joystick[each].get_axis(0)
             print Application.joystick[each].get_axis(1)
-            for eachbutton in range(buttons):
+            for eachbutton in range(Application.buttons):
                 button = self.joystick[each].get_button(eachbutton)
                 print eachbutton, ":",button, "    ",
             print ""
