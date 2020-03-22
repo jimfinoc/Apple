@@ -16,6 +16,7 @@ for each in range(connected):
     axes = joystick[each].get_numaxes()
     buttons = joystick[each].get_numbuttons()
     hats = joystick[each].get_numhats()
+    balls = joystick[each].get_numballs()
     print "axes"
     print (axes)
     print "buttons"
@@ -26,6 +27,7 @@ for each in range(connected):
 
 while True:
     time.sleep(.1)
+    pygame.event.pump()
     for each in range(connected):
 
         print "Joystick", each ,":"
