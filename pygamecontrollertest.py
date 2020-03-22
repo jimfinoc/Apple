@@ -34,6 +34,6 @@ while True:
         # print joystick[each].get_axis(xAxisNum)
         # print joystick[each].get_axis(yAxisNum)
         for eachbutton in range(buttons):
-            button = joystick[each].get_button(each)
+            button = joystick[each].get_button(eachbutton)
             print eachbutton, ":",button, "    ",
         print ""
