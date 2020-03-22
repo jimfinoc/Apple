@@ -246,6 +246,7 @@ class Application(object):
     pygame.joystick.init()
     connected = pygame.joystick.get_count()
     print "you have", connected, "connected controllers"
+
     def __init__(self, master, **kwargs):
         self.master = master
         if "screenHeight" in kwargs:
@@ -257,12 +258,12 @@ class Application(object):
         else:
             screenWidth = 400
         for each in range(self.connected):
-            self.joystick.append( self.pygame.joystick.Joystick(each) )
-            self.joystick[each].init()
-            axes = joystick[each].get_numaxes()
-            buttons = joystick[each].get_numbuttons()
-            hats = joystick[each].get_numhats()
-            balls = joystick[each].get_numballs()
+            Application.joystick.append( Application.pygame.joystick.Joystick(each) )
+            Application.joystick[each].init()
+            Application.axes = Application.joystick[each].get_numaxes()
+            Application.buttons = Application.joystick[each].get_numbuttons()
+            Application.hats = Application.joystick[each].get_numhats()
+            Application.balls = Application.joystick[each].get_numballs()
             print "axes"
             print (axes)
             print "buttons"
@@ -322,8 +323,8 @@ class Application(object):
         #---------------------------------------
         for each in range(connected):
             print "Joystick", each ,":"
-            print self.joystick[each].get_axis(xAxisNum)
-            print self.joystick[each].get_axis(yAxisNum)
+            print Application.joystick[each].get_axis(0)
+            print Application.joystick[each].get_axis(1)
             for eachbutton in range(buttons):
                 button = self.joystick[each].get_button(eachbutton)
                 print eachbutton, ":",button, "    ",
