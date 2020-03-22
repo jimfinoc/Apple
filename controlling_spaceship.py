@@ -245,6 +245,7 @@ class Application(object):
     pygame.init()
     pygame.joystick.init()
     connected = pygame.joystick.get_count()
+    joystick = []
     print "you have", connected, "connected controllers"
 
     def __init__(self, master, **kwargs):
