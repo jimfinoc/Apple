@@ -266,11 +266,11 @@ class Application(object):
             Application.hats = Application.joystick[each].get_numhats()
             Application.balls = Application.joystick[each].get_numballs()
             print "axes"
-            print (axes)
+            print (Application.axes)
             print "buttons"
-            print (buttons)
+            print (Application.buttons)
             print "hats"
-            print (hats)
+            print (Application.hats)
 
 
         self.canvas = tk.Canvas(self.master, width=screenWidth, height=screenHeight)
