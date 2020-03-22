@@ -4,6 +4,8 @@ import random
 import math
 import pygame
 
+pygame.init()
+pygame.joystick.init()
 
 
 class CharacterGraphic(object):
@@ -242,9 +244,6 @@ class CharacterGraphic(object):
 
 # ____________________________________________________________________________
 class Application(object):
-    pygame = None
-    pygame.init()
-    pygame.joystick.init()
     connected = pygame.joystick.get_count()
     joystick = []
     print "you have", connected, "connected controllers"
@@ -260,7 +259,7 @@ class Application(object):
         else:
             screenWidth = 400
         for each in range(self.connected):
-            Application.joystick.append( Application.pygame.joystick.Joystick(each) )
+            Application.joystick.append( pygame.joystick.Joystick(each) )
             Application.joystick[each].init()
             Application.axes = Application.joystick[each].get_numaxes()
             Application.buttons = Application.joystick[each].get_numbuttons()
