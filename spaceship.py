@@ -309,6 +309,8 @@ class Application(object):
 
 # ____________________________________________________________________________
 
-root = tk.Tk()
-app = Application(root,screenWidth="1000",screenHeight="500")
-root.mainloop()
+if __name__ == '__main__':  # single underscore
+    # main()
+    root = tk.Tk()
+    app = Application(root,screenWidth="1000",screenHeight="500")
+    root.mainloop()

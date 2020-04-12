@@ -1,0 +1,1 @@
+{"weapon_name": "Club", "weapon_type": ["melee"], "description": "Like a heavy peice of wood.", "complexity": "Simple", "cost": "10", "damage_type": ["bludgeoning"], "weapon_property": ["not_heavy"], "weight": "2", "damage": "1d4"}

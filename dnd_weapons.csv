@@ -1,0 +1,38 @@
+weapon_name,complexity,type,copper_cost,damage_die,damage_type,weight,Properties
+club,simple,melee,10,1d4,bludgeoning,2,light
+dagger,simple,melee,200,1d4,piercing,1,finesse,light,thrown (range 20/60)
+greatclub,simple,melee,20,1d8,bludgeoning,10,two-handed
+handaxe,simple,melee,500,1d6,slashing,2,light,thrown (range 20/60)
+javelin,simple,melee,50,1d6,piercing,2,thrown (range 30/120)
+light hammer,simple,melee,200,1d4,bludgeoning,2,light,thrown (range 20/60)
+mace,simple,melee,500,1d6,bludgeoning,4,none
+quarterstaff,simple,melee,20,1d6,bludgeoning,4,versatile (1d8)
+sickle,simple,melee,100,1d4,slashing,2,light
+spear,simple,melee,100,1d6,piercing,3,thrown (range 20/60),versatile (1d8)
+light crossbow,simple,ranged,2500,1d8,piercing,5,ammunition (range 80/320),loading,two-handed
+dart,simple,ranged,5,1d4,piercing,0.1,finesse,thrown (range 20/60)
+shortbow,simple,ranged,2500,1d6,piercing,2,ammunition (range 80/320),two-handed
+sling,simple,ranged,10,1d4,bludgeoning,1,ammunition (range 30/120)
+battleaxe,martial,melee,1000,1d8,slashing,4,versatile (1d10)
+flail,martial,melee,1000,1d8,bludgeoning,2,none
+glaive,martial,melee,2000,1d10,slashing,6,heavy,reach,two-handed
+greataxe,martial,melee,3000,1d12,slashing,7,heavy,two-handed
+greatsword,martial,melee,5000,2d6,slashing,6,heavy,two-handed
+halberd,martial,melee,2000,1d10,slashing,6,heavy,reach,two-handed
+lance,martial,melee,1000,1d12,piercing,6,reach,special
+longsword,martial,melee,1500,1d8,slashing,3,versatile (1d10)
+maul,martial,melee,1000,2d6,bludgeoning,10,heavy,two-handed
+morningstar,martial,melee,1500,1d8,piercing,4,none
+pike,martial,melee,500,1d10,piercing,18,heavy,reach,two-handed
+rapier,martial,melee,2500,1d8,piercing,2,finesse
+scimitar,martial,melee,2500,1d6,slashing,3,finesse,light
+shortsword,martial,melee,1000,1d6,piercing,2,finesse,light
+trident,martial,melee,500,1d6,piercing,4,thrown (range 20/60),versatile (1d8)
+war pick,martial,melee,500,1d8,piercing,2,none
+warhammer,martial,melee,1500,1d8,bludgeoning,2,versatile (1d10)
+whip,martial,melee,200,1d4,slashing,3,finesse,reach
+blowgun,martial,ranged,1000,1,piercing,1,ammunition (range 25/100),loading
+hand crossbow,martial,ranged,7500,1d6,piercing,3,ammunition (range 30/120),light,loading
+heavy crossbow,martial,ranged,5000,1d10,piercing,18,ammunition (range 100/400),heavy,loading,two-handed
+longbow,martial,ranged,5000,1d8,piercing,2,ammunition (range 150/600),heavy,two-handed
+net,martial,ranged,100,0d4,bludgeoning,3,special,thrown (range 5/15)

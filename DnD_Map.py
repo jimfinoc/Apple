@@ -1,5 +1,5 @@
 import sqlite3
-conn = sqlite3.connect('example.db')
+conn = sqlite3.connect('dnd_game.sqlite')
 
 c = conn.cursor()
 
@@ -10,11 +10,9 @@ c.execute('''CREATE TABLE IF NOT EXISTS map
              description text
              )''')
 
-# Insert a row of data
-# c.execute("SELECT '(0,1)' FROM map")
 
-print ""
-print "everything in the table"
+print ("")
+print ("everything in the table")
 c.execute('SELECT * FROM map')
 conn.commit()
 rows = c.fetchall()
@@ -29,8 +27,8 @@ position = (str(x)+","+str(y),)
 # position = ('0,-1',)
 terrain = ('grass',)
 
-print ""
-print "now working on the table"
+print ("")
+print ("now working on the table")
 c.execute('SELECT * FROM map WHERE coordinates=?', position)
 conn.commit()
 
@@ -45,12 +43,12 @@ else:
     c.execute("UPDATE map SET description = ? WHERE coordinates =?", (terrain[0],position[0]),)
     conn.commit()
 
-print ""
-print "everything in our range of:"
+print ("")
+print ("everything in our range of:")
 x_range = 2
 y_range = 2
-print "x from", -x_range," to ", x_range
-print "y from", -y_range," to ", y_range
+print ("x from", -x_range," to ", x_range)
+print ("y from", -y_range," to ", y_range)
 c.execute('SELECT * FROM map')
 conn.commit()
 rows = c.fetchall()
@@ -66,7 +64,7 @@ for y in range(y_range,-y_range-1,-1):
         conn.commit()
         data = c.fetchall()
         if not data:
-            print ("."),
+            print (".",)
         else:
             print (data[0][1][0]),
     print ("")
