@@ -242,7 +242,7 @@ if __name__ == '__main__':  # single underscore
     # visualize  --------------------------------------------------------------------------------------------------------------------------------------------
     while not done:
         print "_______________begin_______________"
-
+        
         # sock.sendto("2" + "\n", (HOST, PORT))
         # received_data = sock.recv(4096)
         # print received_data
