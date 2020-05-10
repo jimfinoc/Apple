@@ -22,6 +22,8 @@
 import socket
 import sys
 import time
+import pickle
+import bz2
 # server_name = input('Enter the server name:')
 # print server_name
 # HOST = socket.gethostbyname(server_name)
@@ -46,6 +48,12 @@ while (True):
     time.sleep(.1)
     print "sending to ", HOST, "at port", PORT
     sock.sendto(data + str(i) + "\n", (HOST, PORT))
-    # received = sock.recv(1024)
+    received_data = sock.recv(4096)
+    uncompressed_received_data = bz2.decompress(received_data)
+    unpickled_uncompressed_received_data = pickle.loads(uncompressed_received_data)
+
     print("Sent:     {}".format(data + str(i)))
-    # print("Received: {}".format(received))
+    print("Received: {}".format(len(received_data)))
+
+    # received = pickle.loads(sock.recv(2048))
+    print("unpickled Received: {}".format(unpickled_uncompressed_received_data))

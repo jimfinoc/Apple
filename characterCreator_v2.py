@@ -54,7 +54,7 @@ print args.Menu
 # print args.option(args.menuOptions)
 
 # all_rulebooks = ["Modern 3e","Fantasy 2e","Fantasy 3e","Fantasy 4e","Fantasy 5e"]
-all_rulebooks = ["Modern 3e","Fantasy 4e"]
+all_rulebooks = ["Modern 3e"]
 
 
 
