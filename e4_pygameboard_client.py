@@ -10,6 +10,63 @@ import sys
 import time
 import pickle
 import bz2
+import argparse
+
+parser = argparse.ArgumentParser(description='This allows you to run the pygameboard client.')
+parser.add_argument('-i', '--initial', type=str, default='0')
+parser.add_argument('-t', '--token', type=int, choices=xrange(0,8),default=6)
+args = parser.parse_args()
+initial_dict = {
+    "0":0,
+    "1":1,
+    "2":2,
+    "3":3,
+    "4":4,
+    "5":5,
+    "6":6,
+    "7":7,
+    "8":8,
+    "9":9,
+    "A":10,
+    "B":11,
+    "C":12,
+    "D":13,
+    "E":14,
+    "F":15,
+    "G":16,
+    "H":17,
+    "I":18,
+    "J":19,
+    "K":20,
+    "L":21,
+    "M":22,
+    "N":23,
+    "O":24,
+    "P":25,
+    "Q":26,
+    "R":27,
+    "S":28,
+    "T":29,
+    "U":30,
+    "V":31,
+    "W":32,
+    "X":33,
+    "Y":34,
+    "Z":35,
+    "#":36,
+    # "!":36,
+    # "&":37,
+    # '"':38,
+    # "-":39,
+    # " ":40,
+    # ",":41,
+    # "'":42,
+    # ".":43,
+    # "?":43,
+    }
+mycharacter_token = args.token
+mycharacter_initial = initial_dict[args.initial.upper()]
+
 HOST = socket.gethostbyname('j-macbookpro.local')
 PORT = 10996
 
@@ -242,7 +299,7 @@ if __name__ == '__main__':  # single underscore
     # visualize  --------------------------------------------------------------------------------------------------------------------------------------------
     while not done:
         print "_______________begin_______________"
-        
+
         # sock.sendto("2" + "\n", (HOST, PORT))
         # received_data = sock.recv(4096)
         # print received_data
@@ -330,8 +387,8 @@ if __name__ == '__main__':  # single underscore
                 print "my location",game_location
                 print "some location",some_location
                 my_character_details["location"] = game_location
-                my_character_details["char_memory"] = 6
-                my_character_details["small_font_memory"] = 21
+                my_character_details["char_memory"] = mycharacter_token
+                my_character_details["small_font_memory"] = mycharacter_initial
                 # image = character_memory[world[location]]
                 if abs(some_location[0]-game_location[0]) <= vision:
                     screen.blit(character_memory[some_char_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
@@ -340,8 +397,8 @@ if __name__ == '__main__':  # single underscore
                 pass
             # screen.blit(small_font_memory[some_font_memory], (some_location[0]- 8+16, some_location[1]- 8+16))
         # drawing my character
-        screen.blit(character_memory[6], (center_x - 8+16 *   0, center_y-8+16 *   0))
-        screen.blit(small_font_memory[21], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
+        screen.blit(character_memory[mycharacter_token], (center_x - 8+16 *   0, center_y-8+16 *   0))
+        screen.blit(small_font_memory[mycharacter_initial], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
 
         pygame.display.flip()
 
