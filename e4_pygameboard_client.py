@@ -110,15 +110,18 @@ def communicate_with_server():
     data["client_command"] = my_command
 
     send_data = pickle.dumps(data)
+    # print "send_data", send_data
     compressed_send_data = bz2.compress(send_data)
+    # print "compressed_send_data",compressed_send_data
     sock.sendto(compressed_send_data, (HOST, PORT))
 
     # sock.sendto("2" + "\n", (HOST, PORT))
+    # print "waiting to receive data"
     received_data = sock.recv(4096)
     # print received_data
     uncompressed_received_data = bz2.decompress(received_data)
     unpickled_uncompressed_received_data = pickle.loads(uncompressed_received_data)
-    print unpickled_uncompressed_received_data.keys()
+    # print unpickled_uncompressed_received_data.keys()
     # try:
     #     world = unpickled_uncompressed_received_data["world"]
     #     # print "world loaded"
@@ -336,6 +339,8 @@ if __name__ == '__main__':  # single underscore
             position = (str(game_location[0])+","+str(game_location[1]),)
             # print position
             # c.execute("DELETE FROM map WHERE coordinates=?", position)
+            my_command["delete"] = game_location
+
             try:
                 pass
                 # del world[game_location]

@@ -10,6 +10,7 @@ import pickle
 import SocketServer, threading, time
 import socket
 import bz2
+import time
 
 
 pygame.init()
@@ -49,6 +50,7 @@ class ThreadedUDPRequestHandler(SocketServer.BaseRequestHandler):
 
         try:
             characters[self.client_address[1]] = unpickled_uncompressed_received_data["client_character"]
+            characters[self.client_address[1]]["time"] = time.time()
         except:
             pass
         # characters[]
@@ -61,7 +63,12 @@ class ThreadedUDPRequestHandler(SocketServer.BaseRequestHandler):
         data["world"] = world
         data["stuff"] = stuff
         data["characters"] = characters
+        # data["characters"][time.time()]
         # print "getting ready to send: ",data
+
+        # print "client_command", unpickled_uncompressed_received_data["client_command"]
+        if "delete" in unpickled_uncompressed_received_data["client_command"].keys():
+            print "deleting", unpickled_uncompressed_received_data["client_command"]["delete"]
 
         send_data = pickle.dumps(data)
         compressed_send_data = bz2.compress(send_data)
@@ -301,6 +308,7 @@ if __name__ == '__main__':  # single underscore
                     image = graphic_memory[30*14+7]
                 screen.blit(image, (center_x - 8+16 *  x, center_y-8+16 *  y))
         print "characters",characters
+        remove_entry = False
         for each_key in characters:
             try:
                 some_location = characters[each_key]["location"]
@@ -318,9 +326,21 @@ if __name__ == '__main__':  # single underscore
                 # elif abs(some_location[0]-game_location[0]) == 0:
                     # screen.blit(character_memory[7], (center_x - 8+16 *   0, center_y-8+16 *   0))
                     # screen.blit(small_font_memory[19], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
+                if characters[each_key]["time"] + 5 < time.time():
+                    remove_entry = each_key
+
 
             except:
                 pass
+        if remove_entry:
+            try:
+                # print remove_entry
+                characters.pop(remove_entry)
+                # print "deleted", remove_entry
+            except:
+                # print "error"
+                pass
+                # quit()
 
         screen.blit(character_memory[7], (center_x - 8+16 *   0, center_y-8+16 *   0))
         screen.blit(small_font_memory[19], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
@@ -329,6 +349,8 @@ if __name__ == '__main__':  # single underscore
         # print "game location",game_location
         characters["server"]["char_memory"] = 6
         characters["server"]["small_font_memory"] = 19
+        characters["server"]["time"] = time.time()
+
 
         pygame.display.flip()
 
