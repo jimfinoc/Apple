@@ -182,7 +182,8 @@ if __name__ == '__main__':  # single underscore
     print "/16"
     print (z[0]/16,z[1]/16)
 
-    land_tiles = load_tile_table("land_tiles.png", 16, 16)
+    land_tiles = load_tile_table("terrain4.png", 16, 16)
+    # land_tiles = load_tile_table("land_tiles.png", 16, 16)
     graphic_memory = {}
     for x, row in enumerate(land_tiles):
         for y, tile in enumerate(row):
@@ -279,12 +280,12 @@ if __name__ == '__main__':  # single underscore
                 try:
                     world[game_location] -= 1
                 except:
-                    world[game_location] = 196
+                    world[game_location] = 2
             else:
                 try:
                     world[game_location] += 1
                 except:
-                    world[game_location] = 196
+                    world[game_location] = 2
             terrain = (world[game_location],)
             print position
             c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
@@ -305,7 +306,8 @@ if __name__ == '__main__':  # single underscore
                     # print "location",location, world[location]
                     image = graphic_memory[world[location]]
                 except:
-                    image = graphic_memory[30*14+7]
+                    image = graphic_memory[0]
+                    # image = graphic_memory[30*14+7]
                 screen.blit(image, (center_x - 8+16 *  x, center_y-8+16 *  y))
         print "characters",characters
         remove_entry = False

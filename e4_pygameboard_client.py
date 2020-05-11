@@ -15,6 +15,7 @@ import argparse
 parser = argparse.ArgumentParser(description='This allows you to run the pygameboard client.')
 parser.add_argument('-i', '--initial', type=str, default='0')
 parser.add_argument('-t', '--token', type=int, choices=xrange(0,8),default=6)
+parser.add_argument('-f', '--fullscreen', type=bool, choices=[True,False],default=False)
 args = parser.parse_args()
 initial_dict = {
     "0":0,
@@ -175,8 +176,13 @@ if __name__ == '__main__':  # single underscore
 
 
     print pygame.display.Info()
-    screen = pygame.display.set_mode(size,
-                        # pygame.FULLSCREEN |
+    if args.fullscreen == True:
+        screen = pygame.display.set_mode(size,
+                        pygame.FULLSCREEN |
+                        pygame.DOUBLEBUF
+                        )
+    else:
+        screen = pygame.display.set_mode(size,
                         pygame.DOUBLEBUF
                         )
     print ""
