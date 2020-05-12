@@ -198,11 +198,11 @@ if __name__ == '__main__':  # single underscore
     print "font_memory loaded", len(font_memory), "sprites."
 
     character_tiles = load_tile_table("character_tiles.png",16,16)
-    character_memory = {}
+    character_tile_memory = {}
     for x, row in enumerate(character_tiles):
         for y, tile in enumerate(row):
-            character_memory[y*8+x] = tile
-    print "character_memory loaded", len(character_memory), "sprites."
+            character_tile_memory[y*8+x] = tile
+    print "character_tile_memory loaded", len(character_tile_memory), "sprites."
 
     small_font_tiles = load_tile_table("small_font_tiles.png",16,16)
     small_font_memory = {}
@@ -321,12 +321,12 @@ if __name__ == '__main__':  # single underscore
                 my_character_details["location"] = game_location
                 my_character_details["char_memory"] = 6
                 my_character_details["small_font_memory"] = 21
-                # image = character_memory[world[location]]
+                # image = character_tile_memory[world[location]]
                 if abs(some_location[0]-game_location[0]) <= vision and abs(some_location[0]-game_location[0]) <= vision :
-                    screen.blit(character_memory[some_char_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
+                    screen.blit(character_tile_memory[some_char_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
                     screen.blit(small_font_memory[some_font_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
                 # elif abs(some_location[0]-game_location[0]) == 0:
-                    # screen.blit(character_memory[7], (center_x - 8+16 *   0, center_y-8+16 *   0))
+                    # screen.blit(character_tile_memory[7], (center_x - 8+16 *   0, center_y-8+16 *   0))
                     # screen.blit(small_font_memory[19], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
                 if characters[each_key]["time"] + 5 < time.time():
                     remove_entry = each_key
@@ -344,7 +344,7 @@ if __name__ == '__main__':  # single underscore
                 pass
                 # quit()
 
-        screen.blit(character_memory[7], (center_x - 8+16 *   0, center_y-8+16 *   0))
+        screen.blit(character_tile_memory[7], (center_x - 8+16 *   0, center_y-8+16 *   0))
         screen.blit(small_font_memory[19], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
         characters["server"] = {}
         characters["server"]["location"] = game_location
