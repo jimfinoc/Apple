@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser(description='This allows you to run pygameboard
 parser.add_argument('-i', '--initial', type=str, default='0')
 parser.add_argument('-t', '--token', type=int, choices=xrange(0,8),default=6)
 parser.add_argument('-f', '--fullscreen', type=str, choices=["True","False"],default=False)
-parser.add_argument('-r', '--role', type=str, choices=['server','client','npc'], default='client')
+parser.add_argument('-r', '--role', type=str, choices=['server','client','server_daemon'], default='client')
 args = parser.parse_args()
 initial_dict = {
     "0":0,
@@ -123,24 +123,57 @@ def push_to_client():
     global characters
     global my_command
     global my_character_details
-    # print "==push_to_clients at port", CLIENT_PORT
+    print "=============push_to_clients at port", CLIENT_PORT
     data = {}
-    data["world"] = world
-    data["stuff"] = stuff
+    # data["world"] = world
+    # data["stuff"] = stuff
     data["characters"] = characters
     # print "sending client uncompressed unpickled data", data
-    send_data = pickle.dumps(data)
-    compressed_send_data = bz2.compress(send_data)
-    # print "characters", characters
+    print "characters", characters
+    # print "characters"
+    # print characters
+    # print ""
     for each in characters:
-        if each == "server":
+        print each
+        small_square = []
+        try:
+            push_location = characters[each]["location"]
+            print "push_location"
+            print push_location
+            print type(push_location)
+            look  = 15
+            # print look
+            for x in range(-look,look+1):
+                # print x
+                for y in range(-look,look+1):
+                    # print push_location[0]+x
+                    # print push_location[1]+y
+                    small_square.append( (push_location[0]+x , push_location[1]+y))
+            print small_square
+        except:
+            small_square.append( (0,0) )
+
+
+        small_world = dict((k, world[k]) for k in small_square if k in world)
+        print small_world
+        data["world"] = small_world
+
+
+        print "push_to_client"
+        print each
+        print characters[each]
+        # if each == "server":
             # print "don't send to the server"
-            pass
-        else:
-            print "send to client",
-            print each,
-            print CLIENT_PORT
-            sock.sendto(compressed_send_data, (each, CLIENT_PORT))
+            # pass
+        # else:
+        print "send to client",
+        print each,
+        print CLIENT_PORT
+        print size
+        print sys.getsizeof(each)
+        send_data = pickle.dumps(data)
+        compressed_send_data = bz2.compress(send_data)
+        sock.sendto(compressed_send_data, (each, CLIENT_PORT))
     # print "done sending to clients"
     # print ""
 
@@ -716,12 +749,12 @@ if __name__ == '__main__':  # single underscore
                     characters.pop(remove_entry)
                 except:
                     pass
-            characters["server"] = {}
-            characters["server"]["location"] = game_location
+            characters['127.0.0.1'] = {}
+            characters['127.0.0.1']["location"] = game_location
             # print "game location",game_location
-            characters["server"]["char_token"] = mycharacter_token
-            characters["server"]["char_initial"] = mycharacter_initial
-            characters["server"]["time"] = time.time()
+            characters['127.0.0.1']["char_token"] = mycharacter_token
+            characters['127.0.0.1']["char_initial"] = mycharacter_initial
+            characters['127.0.0.1']["time"] = time.time()
         pygame.display.flip()
         first_pass = False
 
