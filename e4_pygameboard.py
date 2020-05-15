@@ -138,9 +138,9 @@ def push_to_client():
         small_square = []
         try:
             push_location = characters[each]["location"]
-            print "push_location"
-            print push_location
-            print type(push_location)
+            # print "push_location"
+            # print push_location
+            # print type(push_location)
             look  = 15
             # print look
             for x in range(-look,look+1):
@@ -149,28 +149,28 @@ def push_to_client():
                     # print push_location[0]+x
                     # print push_location[1]+y
                     small_square.append( (push_location[0]+x , push_location[1]+y))
-            print small_square
+            # print small_square
         except:
             small_square.append( (0,0) )
 
 
         small_world = dict((k, world[k]) for k in small_square if k in world)
-        print small_world
+        # print small_world
         data["world"] = small_world
 
 
-        print "push_to_client"
-        print each
-        print characters[each]
+        # print "push_to_client"
+        # print each
+        # print characters[each]
         # if each == "server":
             # print "don't send to the server"
             # pass
         # else:
         print "send to client",
-        print each,
-        print CLIENT_PORT
-        print size
-        print sys.getsizeof(each)
+        # print each,
+        # print CLIENT_PORT
+        # print size
+        # print sys.getsizeof(each)
         send_data = pickle.dumps(data)
         compressed_send_data = bz2.compress(send_data)
         sock.sendto(compressed_send_data, (each, CLIENT_PORT))
