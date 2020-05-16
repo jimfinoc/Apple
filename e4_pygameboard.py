@@ -101,8 +101,10 @@ RED =   (255,   0,   0)
 
 my_character_details = {}
 my_command = {}
-characters = {}
-world = {}
+big_characters = {}
+little_characters = {}
+big_world = {}
+little_world = {}
 stuff = {}
 
 
@@ -119,27 +121,27 @@ def load_tile_table(filename, width, height):
     return tile_table
 
 def push_to_client():
-    global world
+    global big_world
     global stuff
-    global characters
+    global big_characters
     global my_command
     global my_character_details
-    print "=============push_to_clients at port", CLIENT_PORT
+    # print "=============push_to_clients at port", CLIENT_PORT
     data = {}
     # data["world"] = world
     # data["stuff"] = stuff
 
-    data["characters"] = dict(characters)
+    data["characters"] = dict(big_characters)
     # print "sending client uncompressed unpickled data", data
-    print "characters", characters
-    # print "characters"
-    # print characters
+    # print "big_characters", big_characters
+    # print "big_characters"
+    # print big_characters
     # print ""
     for each in data["characters"]:
-        print each
+        # print each
         small_square = []
         try:
-            push_location = characters[each]["location"]
+            push_location = big_characters[each]["location"]
             # print "push_location"
             # print push_location
             # print type(push_location)
@@ -156,19 +158,19 @@ def push_to_client():
             small_square.append( (0,0) )
 
 
-        small_world = dict((k, world[k]) for k in small_square if k in world)
+        sliceofthe_world = dict((k, big_world[k]) for k in small_square if k in big_world)
         # print small_world
-        data["world"] = small_world
+        data["world"] = sliceofthe_world
 
 
         # print "push_to_client"
         # print each
-        # print characters[each]
+        # print big_characters[each]
         # if each == "server":
             # print "don't send to the server"
             # pass
         # else:
-        print "send to client",
+        # print "send to client",
         # print each,
         # print CLIENT_PORT
         # print size
@@ -181,9 +183,6 @@ def push_to_client():
 
 
 def push_to_server():
-    global world
-    global stuff
-    global characters
     global my_command
     global my_character_details
     # print "==push_to_server to ", HOST, "at port", HOST_PORT
@@ -206,11 +205,9 @@ def push_to_server():
 
 class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
     def handle(self):
-        global world
+        global big_world
         global stuff
-        global characters
-        global my_command
-        global my_character_details
+        global big_characters
         conn = sqlite3.connect('dnd_game_4e.sqlite')
         c = conn.cursor()
         received_data = self.request[0]
@@ -219,15 +216,26 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
         unpickled_uncompressed_received_data = pickle.loads(uncompressed_received_data)
         data = unpickled_uncompressed_received_data
         current_thread = threading.current_thread()
+        # live character check
+        remove_entry = False
+        for each_key in big_characters:
+            if big_characters[each_key]["time"] + 5 < time.time():
+                remove_entry = each_key
+        if remove_entry:
+            try:
+                characters.pop(remove_entry)
+            except:
+                pass
+
         try:
             timer = time.time()
             # print "got time of", timer
             # print unpickled_uncompressed_received_data["client_character"]
             visitor = str(self.client_address[0])+","+str(self.client_address[1])
-            print "ipaddress is", self.client_address[0]
-            print "visitor", visitor
-            characters[self.client_address[0]] = data["client_character"]
-            characters[self.client_address[0]]["time"] = timer
+            # print "ipaddress is", self.client_address[0]
+            # print "visitor", visitor
+            big_characters[self.client_address[0]] = data["client_character"]
+            big_characters[self.client_address[0]]["time"] = timer
             # print "data",
             # print data
             # print ""
@@ -239,7 +247,7 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
                     try:
                         location_removal = command["delete"]
                         position = (str(location_removal[0])+","+str(location_removal[1]),)
-                        del world[location_removal]
+                        del big_world[location_removal]
                         c.execute("DELETE FROM map WHERE coordinates=?", position)
                         conn.commit()
                     except:
@@ -249,9 +257,9 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
                         set_to = command["set_tile"]["value"]
                         location_set = command["set_tile"]["location"]
                         position = (str(location_set[0])+","+str(location_set[1]),)
-                        world[location_set] = set_to
-                        # print "world[location_set] = set_to"
-                        # print "world[location_set] =",
+                        big_world[location_set] = set_to
+                        # print "big_world[location_set] = set_to"
+                        # print "big_world[location_set] =",
                         # print set_to
                         terrain = set_to
                         c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
@@ -259,8 +267,8 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
                     except:
                         print "error in command set_tile"
 
-            # characters[visitor] = unpickled_uncompressed_received_data["client_character"]
-            # characters[visitor]["time"] = timer
+            # big_characters[visitor] = unpickled_uncompressed_received_data["client_character"]
+            # big_characters[visitor]["time"] = timer
             # print "client_address", client_address[0]
             # CLIENT[client_address[0]] = timer
         except:
@@ -274,9 +282,9 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
 
 class ThreadedUDPRequestHandlerForClient(SocketServer.BaseRequestHandler):
     def handle(self):
-        global world
+        global little_world
         global stuff
-        global characters
+        global little_characters
         global my_command
         global my_character_details
         received_data = self.request[0]
@@ -285,19 +293,20 @@ class ThreadedUDPRequestHandlerForClient(SocketServer.BaseRequestHandler):
         unpickled_uncompressed_received_data = pickle.loads(uncompressed_received_data)
         data = unpickled_uncompressed_received_data
         current_thread = threading.current_thread()
-        if args.role == 'client':
-            try:
-                world = unpickled_uncompressed_received_data['world']
-                characters = unpickled_uncompressed_received_data['characters']
-                # print "received world", world
-                # print "received characters", characters
-            except:
-                print ""
-                print "error with ThreadedUDPRequestHandlerForClient server role"
-                print self.client_address[0]
-                print self.client_address[1]
-                print "What is going on?"
-                print ""
+        # if args.role == 'client':
+        try:
+            # print "trying to receive a slice of the world"
+            little_world = unpickled_uncompressed_received_data['world']
+            little_characters = unpickled_uncompressed_received_data['characters']
+            # print "received world", little_world
+            # print "received little_characters", little_characters
+        except:
+            print ""
+            print "error with ThreadedUDPRequestHandlerForClient server role"
+            print self.client_address[0]
+            print self.client_address[1]
+            print "What is going on?"
+            print ""
 
 
 class ThreadedUDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):
@@ -336,8 +345,8 @@ if __name__ == '__main__':  # single underscore
             server_threadS.start()
             print("Server started at {} port {}".format(HOST, HOST_PORT))
         except (KeyboardInterrupt, SystemExit):
-            server.shutdown()
-            server.server_close()
+            serverS.shutdown()
+            serverS.server_close()
             exit()
 
     # if args.role == 'client':
@@ -353,8 +362,8 @@ if __name__ == '__main__':  # single underscore
             server_threadC.start()
             print("Server started at {} port {}".format(HOST, CLIENT_PORT))
         except (KeyboardInterrupt, SystemExit):
-            server.shutdown()
-            server.server_close()
+            serverC.shutdown()
+            serverC.server_close()
             exit()
 
 
@@ -376,50 +385,16 @@ if __name__ == '__main__':  # single underscore
         for location,data in rows:
             x = int(location.split(",")[0])
             y = int(location.split(",")[1])
-            # try:
             splitdata = data.split(",")
             if len(splitdata) == 1:
-                world[x,y] = (int(data),)
+                big_world[x,y] = (int(data),)
             if len(splitdata) == 2:
-                # print "help"
-                # print ""
-                # print "x,y", x,y,
-                # print "data ",data
                 terrain = int(splitdata[0].replace('(', ''))
-                # print ""
-                # print "terrain",
-                # print terrain
-                # print "type(terrain)",
-                # print type(terrain)
-
                 object = splitdata[1].replace(')', '')
-                # print ""
-                # print "object",
-                # print object
                 if object == "":
-                    world[x,y] = (terrain,)
+                    big_world[x,y] = (terrain,)
                 else:
-                    world[x,y] = (terrain,int(object))
-                # print world[x,y]
-                # terrain = int([0])
-                #
-                #
-                # print "data",
-                # print data
-                # print "terrain",
-                # print terrain
-                # print "object",
-                # print object
-                # world[x,y] = (int(terrain),int(object) )
-                # print "world[x,y] = "
-                # print world[x,y]
-                # quit()
-            # except:
-            #     pass
-            #     try:
-            #         world[x,y] = (int(data),)
-            #     except:
-            #         pass
+                    big_world[x,y] = (terrain,int(object))
 
 
 
@@ -496,7 +471,7 @@ if __name__ == '__main__':  # single underscore
     timer = 0
     keys = pygame.key.get_pressed()
     game_location = (random.randint(0,3),random.randint(0,3))
-    game_location = (0,0) #starting location
+    # game_location = (0,0) #starting location
 
 
     # visualize  --------------------------------------------------------------------------------------------------------------------------------------------
@@ -508,27 +483,11 @@ if __name__ == '__main__':  # single underscore
     mouse_position = (0,0)
     while not done:
         # print "_______________begin_______________"
-
-        # sock.sendto("2" + "\n", (HOST, PORT))
-        # received_data = sock.recv(4096)
-        # print received_data
-        # uncompressed_received_data = bz2.decompress(received_data)
-        # unpickled_uncompressed_received_data = pickle.loads(uncompressed_received_data)
-        # world = unpickled_uncompressed_received_data
-        # data = communicate_with_server()
-        # world = data["world"]
-        # characters = data["characters"]
-        if args.role == 'server_daemon' or args.role == 'server':
+        if args.role == 'server' or args.role == 'server_daemon':
             push_to_client()
-        if args.role != 'server_daemon':
+        if args.role == 'client' or args.role == 'server':
             push_to_server()
 
-
-        # print world
-        # stuff = unpickled_uncompressed_received_data["stuff"]
-        # characters = unpickled_uncompressed_received_data["characters"]
-
-        # done = True
         clock.tick(10)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -568,7 +527,7 @@ if __name__ == '__main__':  # single underscore
             position = (str(game_location[0])+","+str(game_location[1]),)
             try:
                 print "000"
-                world[game_location] = (last_edit[0],last_edit[1])
+                little_world[game_location] = (last_edit[0],last_edit[1])
 
                 # if last_edit == world[game_location]:
                     # if keys[pygame.K_RSHIFT] or keys[pygame.K_LSHIFT]:
@@ -579,30 +538,30 @@ if __name__ == '__main__':  # single underscore
                 # else:
                     # world[game_location] = (last_edit[0],)
             except:
-                world[game_location] = (last_edit[0],)
-            print "world[game_location]",
-            print world[game_location]
-            print "type(world[game_location])"
-            print type(world[game_location])
+                little_world[game_location] = (last_edit[0],)
+            print "little_world[game_location]",
+            print little_world[game_location]
+            print "type(little_world[game_location])"
+            print type(little_world[game_location])
             terrain = 0
             #---------------------------check before writing to database
-            if type(world[game_location]) is tuple:
+            if type(little_world[game_location]) is tuple:
                 print "111"
                 print "tuple check"
-                if len (world[game_location]) == 1:
-                    terrain = (str(world[game_location][0]),)
+                if len (little_world[game_location]) == 1:
+                    terrain = (str(little_world[game_location][0]),)
                     print "terrain in check 1"
 
                 print "tuple check 2"
-                if len (world[game_location]) == 2:
+                if len (little_world[game_location]) == 2:
                     print "222"
-                    terrain = (str(world[game_location][0])+","+str(world[game_location][1]),)
+                    terrain = (str(little_world[game_location][0])+","+str(little_world[game_location][1]),)
                     print "terrain in check 2"
 
-            elif type(world[game_location]) is int:
+            elif type(little_world[game_location]) is int:
                 print "int check"
-                terrain = (str(world[game_location][0]),)
-                # terrain = (world[game_location],)
+                terrain = (str(little_world[game_location][0]),)
+                # terrain = (little_world[game_location],)
             # print position
             # if args.role == "server":
             #     print "333"
@@ -617,7 +576,7 @@ if __name__ == '__main__':  # single underscore
             #     conn.commit()
             # if args.role == "client":
             my_command["set_tile"] = {}
-            my_command["set_tile"]["value"] = world[game_location]
+            my_command["set_tile"]["value"] = little_world[game_location]
             my_command["set_tile"]["location"] = game_location
             # write completete
         if pygame.mouse.get_focused():
@@ -640,21 +599,21 @@ if __name__ == '__main__':  # single underscore
                 object_image = False
                 location = (game_location[0] + x,game_location[1] + y)
                 # print type (location)
-                # print type (world[location])
-                if location in world.keys():
-                    if type(world[location]) is int:
+                # print type (little_world[location])
+                if location in little_world.keys():
+                    if type(little_world[location]) is int:
                         # print "+++int check for image2"
-                        # print world[location]
-                        terrain_image = graphic_memory[world[location]]
-                    if type(world[location]) is tuple:
-                        # print world[location]
-                        # print world[location][0]
-                        terrain_image = graphic_memory[world[location][0]]
+                        # print little_world[location]
+                        terrain_image = graphic_memory[little_world[location]]
+                    if type(little_world[location]) is tuple:
+                        # print little_world[location]
+                        # print little_world[location][0]
+                        terrain_image = graphic_memory[little_world[location][0]]
                         # print "+++tuple check for image2"
-                        # print world[location][0]
-                        if len (world[location]) == 2:
-                            # print world[location][1]
-                            object_image = object_memory[world[location][1]]
+                        # print little_world[location][0]
+                        if len (little_world[location]) == 2:
+                            # print little_world[location][1]
+                            object_image = object_memory[little_world[location][1]]
                         else:
                             object_image = False
                 else:
@@ -676,7 +635,7 @@ if __name__ == '__main__':  # single underscore
                     mouse_terrain_lookup[xi + yi * bigX] =  (startX + xi *spacing, startY + yi *spacing, startX + xi *spacing + 16, startY + yi *spacing+ 16)
                 # screen.blit(graphic_memory[0], (600 , 100))
         # if first_pass:
-            # print "world",world
+            # print "little_world",little_world
 
         if mouse_buttons[0]:
             for each in mouse_terrain_lookup:
@@ -712,28 +671,22 @@ if __name__ == '__main__':  # single underscore
             except:
                 screen.blit(graphic_memory[last_edit], (614, 25 ))
 
-        # screen.blit(graphic_memory[last_edit], (620, 60 ))
-
-        # drawing characters from server
-        # print "characters",characters
-        remove_entry = False
-        for each_key in characters:
+        for each_key in little_characters:
             try:
                 # print "one at a time"
                 # print each_key,
-                # print characters[each_key]
-                if ( args.role == "server" ) and ( characters[each_key]["time"] + 5 < time.time() ):
-                    remove_entry = each_key
-                some_location = characters[each_key]["location"]
-                some_char_token = characters[each_key]["char_token"]
-                some_font_memory = characters[each_key]["char_initial"]
+                print little_characters[each_key]
+                some_location = little_characters[each_key]["location"]
+                some_char_token = little_characters[each_key]["char_token"]
+                some_font_memory = little_characters[each_key]["char_initial"]
                 # print "my location",game_location
                 # print "some location",some_location
                 my_character_details["location"] = game_location
                 my_character_details["char_token"] = mycharacter_token
                 my_character_details["char_initial"] = mycharacter_initial
-                # image = character_memory[world[location]]
-                if abs(some_location[0]-game_location[0]) <= vision:
+                # image = character_memory[little_world[location]]
+                if some_char_token != mycharacter_token and some_font_memory != mycharacter_initial:
+                # if (abs(some_location[0]-game_location[0]) <= vision):
                     screen.blit(character_memory[some_char_token], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
                     screen.blit(small_font_memory[some_font_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
             except:
@@ -748,13 +701,6 @@ if __name__ == '__main__':  # single underscore
             my_character_details["char_token"] = mycharacter_token
             my_character_details["char_initial"] = mycharacter_initial
             # my_character_details["address"]
-
-        if args.role == "server":
-            if remove_entry:
-                try:
-                    characters.pop(remove_entry)
-                except:
-                    pass
             # characters['127.0.0.1'] = {}
             # characters['127.0.0.1']["location"] = game_location
             # # print "game location",game_location
