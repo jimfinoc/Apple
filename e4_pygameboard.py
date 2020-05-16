@@ -80,6 +80,7 @@ print ".role", args.role
 HOST = socket.gethostbyname('j-macbookpro.local')
 HOST_PORT = 10996
 CLIENT_PORT = 10997
+NPC_PORT = 10998
 
 
 
@@ -202,29 +203,21 @@ def push_to_server():
 
 
 
-class ThreadedUDPRequestHandler(SocketServer.BaseRequestHandler):
+class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
     def handle(self):
         global world
         global stuff
         global characters
         global my_command
         global my_character_details
-        # global c
-        # global conn
         conn = sqlite3.connect('dnd_game_4e.sqlite')
         c = conn.cursor()
-
         received_data = self.request[0]
         socket = self.request[1]
         uncompressed_received_data = bz2.decompress(received_data)
         unpickled_uncompressed_received_data = pickle.loads(uncompressed_received_data)
         data = unpickled_uncompressed_received_data
-        # print "received", unpickled_uncompressed_received_data
         current_thread = threading.current_thread()
-        # print("{}: client: {}, wrote: {}".format(current_thread.name, self.client_address, received_data))
-        # print "client_address", self.client_address[1]
-
-        # print "the characters are", characters
         if args.role == 'server':
             try:
                 timer = time.time()
@@ -273,6 +266,20 @@ class ThreadedUDPRequestHandler(SocketServer.BaseRequestHandler):
                 print "error with ThreadedUDPRequestHandler server role"
                 print self.client_address[0]
                 print self.client_address[1]
+
+class ThreadedUDPRequestHandlerForClient(SocketServer.BaseRequestHandler):
+    def handle(self):
+        global world
+        global stuff
+        global characters
+        global my_command
+        global my_character_details
+        received_data = self.request[0]
+        socket = self.request[1]
+        uncompressed_received_data = bz2.decompress(received_data)
+        unpickled_uncompressed_received_data = pickle.loads(uncompressed_received_data)
+        data = unpickled_uncompressed_received_data
+        current_thread = threading.current_thread()
         if args.role == 'client':
             try:
                 world = unpickled_uncompressed_received_data['world']
@@ -281,27 +288,6 @@ class ThreadedUDPRequestHandler(SocketServer.BaseRequestHandler):
                 # print "received characters", characters
             except:
                 pass
-        # characters[]
-
-        # print "received_data", received_data
-        # print("{}: client: {}, wrote: {}".format(current_thread.name, self.client_address, received_data))
-        # socket.sendto(data.upper(), self.client_address)
-        # print "world",world
-        # data = {}
-        # data["world"] = world
-        # data["stuff"] = stuff
-        # data["characters"] = characters
-        # data["characters"][time.time()]
-        # print "getting ready to send: ",data
-
-        # print "client_command", unpickled_uncompressed_received_data["client_command"]
-        # if "delete" in unpickled_uncompressed_received_data["client_command"].keys():
-            # print "deleting", unpickled_uncompressed_received_data["client_command"]["delete"]
-
-        # send_data = pickle.dumps(data)
-        # compressed_send_data = bz2.compress(send_data)
-        # print "send_data",len(compressed_send_data)
-        # socket.sendto(compressed_send_data, self.client_address)
 
 class ThreadedUDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):
     print "ThreadedUDPServer started"
@@ -324,18 +310,19 @@ if __name__ == '__main__':  # single underscore
     #              description text
     #              )''')
     print args.role
-    if args.role == 'server':
+    if args.role == 'server' or args.role == 'server_daemon':
         print "starting server server"
         print "Host", HOST
         print "Port", HOST_PORT
         # server = ThreadedUDPServer((HOST, HOST_PORT), ThreadedUDPRequestHandler)
-        server = ThreadedUDPServer(("", HOST_PORT), ThreadedUDPRequestHandler)
+        server = ThreadedUDPServer(("", HOST_PORT), ThreadedUDPRequestHandlerForServer)
         print "server server should be started"
         PORT = HOST_PORT
-    if args.role == 'client':
+    # if args.role == 'client':
+    if args.role != 'server_daemon':
         print "starting client server"
         # server = ThreadedUDPServer((socket.gethostbyname(socket.gethostname()), CLIENT_PORT), ThreadedUDPRequestHandler)
-        server = ThreadedUDPServer(("", CLIENT_PORT), ThreadedUDPRequestHandler)
+        server = ThreadedUDPServer(("", CLIENT_PORT), ThreadedUDPRequestHandlerForClient)
         print "client server should be started"
         PORT = CLIENT_PORT
 
