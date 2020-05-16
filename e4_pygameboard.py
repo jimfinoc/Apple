@@ -138,7 +138,9 @@ def push_to_client():
     # print big_characters
     # print ""
     for each in data["characters"]:
-        # print each
+        print "==push_to_client"
+        print each,
+        print data["characters"][each]
         small_square = []
         try:
             push_location = big_characters[each]["location"]
@@ -221,12 +223,16 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
         for each_key in big_characters:
             if big_characters[each_key]["time"] + 5 < time.time():
                 remove_entry = each_key
+                print "should pop"
         if remove_entry:
             try:
-                characters.pop(remove_entry)
+            # if 1==1:
+                print "trying to pop"
+                big_characters.pop(remove_entry)
+                print "should have popped"
             except:
+                # print "couldn't pop"
                 pass
-
         try:
             timer = time.time()
             # print "got time of", timer
@@ -675,7 +681,7 @@ if __name__ == '__main__':  # single underscore
             try:
                 # print "one at a time"
                 # print each_key,
-                print little_characters[each_key]
+                # print little_characters[each_key]
                 some_location = little_characters[each_key]["location"]
                 some_char_token = little_characters[each_key]["char_token"]
                 some_font_memory = little_characters[each_key]["char_initial"]
@@ -686,9 +692,9 @@ if __name__ == '__main__':  # single underscore
                 my_character_details["char_initial"] = mycharacter_initial
                 # image = character_memory[little_world[location]]
                 if some_char_token != mycharacter_token and some_font_memory != mycharacter_initial:
-                # if (abs(some_location[0]-game_location[0]) <= vision):
-                    screen.blit(character_memory[some_char_token], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
-                    screen.blit(small_font_memory[some_font_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
+                    if (abs(some_location[0]-game_location[0]) <= vision):
+                        screen.blit(character_memory[some_char_token], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
+                        screen.blit(small_font_memory[some_font_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
             except:
                 pass
             # screen.blit(small_font_memory[some_font_memory], (some_location[0]- 8+16, some_location[1]- 8+16))
