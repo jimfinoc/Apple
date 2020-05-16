@@ -17,7 +17,7 @@ import SocketServer, threading, time
 parser = argparse.ArgumentParser(description='This allows you to run pygameboard.')
 parser.add_argument('-i', '--initial', type=str, default='0')
 parser.add_argument('-t', '--token', type=int, choices=xrange(0,8),default=6)
-parser.add_argument('-f', '--fullscreen', type=str, choices=["True","False"],default=False)
+parser.add_argument('-f', '--fullscreen', type=str, choices=["yes","no"],default="no")
 parser.add_argument('-r', '--role', type=str, choices=['server','client','server_daemon'], default='client')
 args = parser.parse_args()
 initial_dict = {
@@ -128,13 +128,14 @@ def push_to_client():
     data = {}
     # data["world"] = world
     # data["stuff"] = stuff
-    data["characters"] = characters
+
+    data["characters"] = dict(characters)
     # print "sending client uncompressed unpickled data", data
     print "characters", characters
     # print "characters"
     # print characters
     # print ""
-    for each in characters:
+    for each in data["characters"]:
         print each
         small_square = []
         try:
@@ -218,54 +219,58 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
         unpickled_uncompressed_received_data = pickle.loads(uncompressed_received_data)
         data = unpickled_uncompressed_received_data
         current_thread = threading.current_thread()
-        if args.role == 'server':
-            try:
-                timer = time.time()
-                # print "got time of", timer
-                # print unpickled_uncompressed_received_data["client_character"]
-                # visitor = str(self.client_address[0])+","+str(self.client_address[1])
-                # print "ipaddress is", self.client_address[0]
-                # print "visitor", visitor
-                characters[self.client_address[0]] = data["client_character"]
-                characters[self.client_address[0]]["time"] = timer
-                # print "data",
-                # print data
-                # print ""
-                command = data["client_command"]
-                # print "command",
-                # print command
-                if command:
-                    if "delete" in command.keys():
-                        try:
-                            location_removal = command["delete"]
-                            position = (str(location_removal[0])+","+str(location_removal[1]),)
-                            del world[location_removal]
-                            c.execute("DELETE FROM map WHERE coordinates=?", position)
-                            conn.commit()
-                        except:
-                            print "error in command delete"
-                    if "set_tile" in command.keys():
-                        try:
-                            set_to = command["set_tile"]["value"]
-                            location_set = command["set_tile"]["location"]
-                            position = (str(location_set[0])+","+str(location_set[1]),)
-                            world[location_set] = (set_to,)
-                            print "world[location_set] = (set_to,)"
-                            print (set_to,)
-                            terrain = (set_to,)
-                            c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
-                            conn.commit()
-                        except:
-                            print "error in command set_tile"
+        try:
+            timer = time.time()
+            # print "got time of", timer
+            # print unpickled_uncompressed_received_data["client_character"]
+            visitor = str(self.client_address[0])+","+str(self.client_address[1])
+            print "ipaddress is", self.client_address[0]
+            print "visitor", visitor
+            characters[self.client_address[0]] = data["client_character"]
+            characters[self.client_address[0]]["time"] = timer
+            # print "data",
+            # print data
+            # print ""
+            command = data["client_command"]
+            # print "command",
+            # print command
+            if command:
+                if "delete" in command.keys():
+                    try:
+                        location_removal = command["delete"]
+                        position = (str(location_removal[0])+","+str(location_removal[1]),)
+                        del world[location_removal]
+                        c.execute("DELETE FROM map WHERE coordinates=?", position)
+                        conn.commit()
+                    except:
+                        print "error in command delete"
+                if "set_tile" in command.keys():
+                    try:
+                        set_to = command["set_tile"]["value"]
+                        location_set = command["set_tile"]["location"]
+                        position = (str(location_set[0])+","+str(location_set[1]),)
+                        world[location_set] = set_to
+                        # print "world[location_set] = set_to"
+                        # print "world[location_set] =",
+                        # print set_to
+                        terrain = set_to
+                        c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
+                        conn.commit()
+                    except:
+                        print "error in command set_tile"
 
-                # characters[visitor] = unpickled_uncompressed_received_data["client_character"]
-                # characters[visitor]["time"] = timer
-                # print "client_address", client_address[0]
-                # CLIENT[client_address[0]] = timer
-            except:
-                print "error with ThreadedUDPRequestHandler server role"
-                print self.client_address[0]
-                print self.client_address[1]
+            # characters[visitor] = unpickled_uncompressed_received_data["client_character"]
+            # characters[visitor]["time"] = timer
+            # print "client_address", client_address[0]
+            # CLIENT[client_address[0]] = timer
+        except:
+            print ""
+            print "error with ThreadedUDPRequestHandlerForServer server role"
+            print self.client_address[0]
+            print self.client_address[1]
+            print "Should you check this out?"
+            print ""
+
 
 class ThreadedUDPRequestHandlerForClient(SocketServer.BaseRequestHandler):
     def handle(self):
@@ -287,7 +292,13 @@ class ThreadedUDPRequestHandlerForClient(SocketServer.BaseRequestHandler):
                 # print "received world", world
                 # print "received characters", characters
             except:
-                pass
+                print ""
+                print "error with ThreadedUDPRequestHandlerForClient server role"
+                print self.client_address[0]
+                print self.client_address[1]
+                print "What is going on?"
+                print ""
+
 
 class ThreadedUDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):
     print "ThreadedUDPServer started"
@@ -311,32 +322,42 @@ if __name__ == '__main__':  # single underscore
     #              )''')
     print args.role
     if args.role == 'server' or args.role == 'server_daemon':
+        print ""
         print "starting server server"
         print "Host", HOST
         print "Port", HOST_PORT
         # server = ThreadedUDPServer((HOST, HOST_PORT), ThreadedUDPRequestHandler)
-        server = ThreadedUDPServer(("", HOST_PORT), ThreadedUDPRequestHandlerForServer)
+        serverS = ThreadedUDPServer(("", HOST_PORT), ThreadedUDPRequestHandlerForServer)
         print "server server should be started"
-        PORT = HOST_PORT
+        server_threadS = threading.Thread(target=serverS.serve_forever)
+        server_threadS.daemon = True
+
+        try:
+            server_threadS.start()
+            print("Server started at {} port {}".format(HOST, HOST_PORT))
+        except (KeyboardInterrupt, SystemExit):
+            server.shutdown()
+            server.server_close()
+            exit()
+
     # if args.role == 'client':
     if args.role != 'server_daemon':
+        print ""
         print "starting client server"
         # server = ThreadedUDPServer((socket.gethostbyname(socket.gethostname()), CLIENT_PORT), ThreadedUDPRequestHandler)
-        server = ThreadedUDPServer(("", CLIENT_PORT), ThreadedUDPRequestHandlerForClient)
+        serverC = ThreadedUDPServer(("", CLIENT_PORT), ThreadedUDPRequestHandlerForClient)
         print "client server should be started"
-        PORT = CLIENT_PORT
+        server_threadC = threading.Thread(target=serverC.serve_forever)
+        server_threadC.daemon = True
+        try:
+            server_threadC.start()
+            print("Server started at {} port {}".format(HOST, CLIENT_PORT))
+        except (KeyboardInterrupt, SystemExit):
+            server.shutdown()
+            server.server_close()
+            exit()
 
 
-    server_thread = threading.Thread(target=server.serve_forever)
-    server_thread.daemon = True
-
-    try:
-        server_thread.start()
-        print("Server started at {} port {}".format(HOST, PORT))
-    except (KeyboardInterrupt, SystemExit):
-        server.shutdown()
-        server.server_close()
-        exit()
 
 
     if args.role == 'server':
@@ -403,18 +424,15 @@ if __name__ == '__main__':  # single underscore
 
 
     print pygame.display.Info()
-    if args.fullscreen == True:
+    if args.fullscreen.lower() == "yes":
         screen = pygame.display.set_mode(size,
                         pygame.FULLSCREEN |
                         pygame.DOUBLEBUF
                         )
-    else:
-        screen = pygame.display.set_mode(size,
-                        pygame.DOUBLEBUF
-                        )
-    if args.role == 'client':
+    else: screen = pygame.display.set_mode(size,pygame.DOUBLEBUF)
+    if args.role != 'server_daemon': #server and client push data to server
         push_to_server()
-    if args.role == 'server':
+    if args.role == 'server' or args.role == 'server_daemon': #only client does not push to client
         push_to_client()
 
 
@@ -500,9 +518,9 @@ if __name__ == '__main__':  # single underscore
         # data = communicate_with_server()
         # world = data["world"]
         # characters = data["characters"]
-        if args.role == 'server':
+        if args.role == 'server_daemon' or args.role == 'server':
             push_to_client()
-        if args.role == 'client':
+        if args.role != 'server_daemon':
             push_to_server()
 
 
@@ -531,21 +549,21 @@ if __name__ == '__main__':  # single underscore
             game_location = (game_location[0] +1, game_location[1])
         if keys[pygame.K_d] and not prior_key_states[pygame.K_d]:
             position = (str(game_location[0])+","+str(game_location[1]),)
-            if args.role == "server":
-                try:
-                    c.execute("DELETE FROM map WHERE coordinates=?", position)
-                    conn.commit()
-                    del world[game_location]
-                except:
-                    pass
-            elif args.role == "client":
-                my_command["delete"] = game_location
+            # if args.role == "server":
+                # try:
+                    # c.execute("DELETE FROM map WHERE coordinates=?", position)
+                    # conn.commit()
+                    # del world[game_location]
+                # except:
+                    # pass
+            # elif args.role == "client":
+            my_command["delete"] = game_location
 
-            try:
-                pass
-                # del world[game_location]
-            except:
-                pass
+            # try:
+            #     pass
+            #     # del world[game_location]
+            # except:
+            #     pass
         if keys[pygame.K_SPACE] and not prior_key_states[pygame.K_SPACE]:
             position = (str(game_location[0])+","+str(game_location[1]),)
             try:
@@ -586,21 +604,21 @@ if __name__ == '__main__':  # single underscore
                 terrain = (str(world[game_location][0]),)
                 # terrain = (world[game_location],)
             # print position
-            if args.role == "server":
-                print "333"
-                print "trying to modify"
-                print "terrain",
-                print terrain
-                print "type(terrain)"
-                print type(terrain)
-                print "terrain[0]",
-                print terrain[0]
-                c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
-                conn.commit()
-            if args.role == "client":
-                my_command["set_tile"] = {}
-                my_command["set_tile"]["value"] = world[game_location]
-                my_command["set_tile"]["location"] = game_location
+            # if args.role == "server":
+            #     print "333"
+            #     print "trying to modify"
+            #     print "terrain",
+            #     print terrain
+            #     print "type(terrain)"
+            #     print type(terrain)
+            #     print "terrain[0]",
+            #     print terrain[0]
+            #     c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
+            #     conn.commit()
+            # if args.role == "client":
+            my_command["set_tile"] = {}
+            my_command["set_tile"]["value"] = world[game_location]
+            my_command["set_tile"]["location"] = game_location
             # write completete
         if pygame.mouse.get_focused():
             mouse_buttons = pygame.mouse.get_pressed()
@@ -724,7 +742,8 @@ if __name__ == '__main__':  # single underscore
         # drawing my character
         screen.blit(character_memory[mycharacter_token], (center_x - 8+16 *   0, center_y-8+16 *   0))
         screen.blit(small_font_memory[mycharacter_initial], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
-        if args.role == "client":
+        # if args.role == "client":
+        if 1==1:
             my_character_details["location"] = game_location
             my_character_details["char_token"] = mycharacter_token
             my_character_details["char_initial"] = mycharacter_initial
@@ -736,12 +755,12 @@ if __name__ == '__main__':  # single underscore
                     characters.pop(remove_entry)
                 except:
                     pass
-            characters['127.0.0.1'] = {}
-            characters['127.0.0.1']["location"] = game_location
-            # print "game location",game_location
-            characters['127.0.0.1']["char_token"] = mycharacter_token
-            characters['127.0.0.1']["char_initial"] = mycharacter_initial
-            characters['127.0.0.1']["time"] = time.time()
+            # characters['127.0.0.1'] = {}
+            # characters['127.0.0.1']["location"] = game_location
+            # # print "game location",game_location
+            # characters['127.0.0.1']["char_token"] = mycharacter_token
+            # characters['127.0.0.1']["char_initial"] = mycharacter_initial
+            # characters['127.0.0.1']["time"] = time.time()
         pygame.display.flip()
         first_pass = False
 
