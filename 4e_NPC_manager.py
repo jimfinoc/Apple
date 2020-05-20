@@ -34,7 +34,8 @@ temp = os.system("clear")
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-HOST = socket.gethostbyname('j-macbookpro.local')
+# HOST = socket.gethostbyname('j-macbookpro.local')
+HOST = socket.gethostbyname('gameserver.local')
 HOST_PORT = 10996
 CLIENT_PORT = 10997
 NPC_PORT = 10998

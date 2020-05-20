@@ -381,7 +381,8 @@ class ThreadedUDPRequestHandlerForClient(SocketServer.BaseRequestHandler):
         # if args.role == 'client':
         try:
             # print "trying to receive a slice of the world"
-            little_world = unpickled_uncompressed_received_data['world']
+            little_world = dict( little_world.items() + unpickled_uncompressed_received_data['world'].items() )
+            # little_world = unpickled_uncompressed_received_data['world']
             little_characters = unpickled_uncompressed_received_data['characters']
             # print "received world", little_world
             # print "received little_characters", little_characters
