@@ -1,7 +1,5 @@
 # Python!
-import pygame
 import math
-import pygame.locals
 import csv
 import random
 import sqlite3
@@ -14,13 +12,19 @@ import argparse
 import SocketServer, threading, time
 import pprint
 
-
 parser = argparse.ArgumentParser(description='This allows you to run pygameboard.')
 parser.add_argument('-i', '--initial', type=str, default='0')
 parser.add_argument('-t', '--token', type=int, choices=xrange(0,8),default=6)
 parser.add_argument('-f', '--fullscreen', type=str, choices=["yes","no"],default="no")
 parser.add_argument('-r', '--role', type=str, choices=['server','client','server_daemon'], default='client')
 args = parser.parse_args()
+
+if args.role != 'server_daemon':
+    import pygame
+    import pygame.locals
+
+
+
 initial_dict = {
     "0":0,
     "1":1,
@@ -72,20 +76,20 @@ initial_dict = {
 mycharacter_token = args.token
 mycharacter_initial = initial_dict[args.initial.upper()]
 
-print "args"
-print ".initial", args.initial
-print ".token", args.token
-print ".fullscreen", args.fullscreen
-print ".role", args.role
+# print "args"
+# print ".initial", args.initial
+# print ".token", args.token
+# print ".fullscreen", args.fullscreen
+# print ".role", args.role
 
 HOST = socket.gethostbyname('j-macbookpro.local')
 HOST_PORT = 10996
 CLIENT_PORT = 10997
 NPC_PORT = 10998
 
-pygame.init()
 
 if args.role != 'server_daemon':
+    pygame.init()
     pygame.display.set_caption('pygame board '+str(args.role))
     size = [720, 320]
     # size = [800, 640]
@@ -268,7 +272,21 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
                         # print "big_world[location_set] = set_to"
                         # print "big_world[location_set] =",
                         # print set_to
-                        terrain = set_to
+                        print "working_position"
+                        print position
+                        print type(position)
+                        # terrain = set_to
+                        # print "terrain"
+                        # print terrain
+                        if len(set_to) == 1:
+                            terrain = (str(set_to[0])+",",)
+                            print terrain
+                        if len(set_to) == 2:
+                            terrain = (str(set_to[0])+","+str(set_to[1]),)
+                            print terrain
+                        print terrain
+                        print type(terrain)
+
                         c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
                         conn.commit()
                     except:
@@ -373,7 +391,8 @@ class ThreadedUDPServer(SocketServer.ThreadingMixIn, SocketServer.UDPServer):
 
 
 done = False
-clock = pygame.time.Clock()
+if args.role != 'server_daemon':
+    clock = pygame.time.Clock()
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -477,9 +496,9 @@ if __name__ == '__main__':  # single underscore
 
 
     # load visuals  --------------------------------------------------------------------------------------------------------------------------------------------
-    keys = pygame.key.get_pressed()
 
     if args.role != 'server_daemon':
+        keys = pygame.key.get_pressed()
         z = pygame.display.get_surface().get_size()
         print "screen and sprite size"
         print z
@@ -556,16 +575,21 @@ if __name__ == '__main__':  # single underscore
         if args.role == 'client' or args.role == 'server':
             push_to_server()
 
+    if args.role != 'server_daemon':
         clock.tick(10)
-        prior_key_states = keys
-        keys = pygame.key.get_pressed()
+    else:
+        time.sleep(.25)
 
-        if args.role == 'server_daemon':
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    done = True
-            if keys[pygame.K_q] and not prior_key_states[pygame.K_q]:
-                done = True
+        if args.role != 'server_daemon':
+            prior_key_states = keys
+            keys = pygame.key.get_pressed()
+
+        # if args.role == 'server_daemon':
+        #     for event in pygame.event.get():
+        #         if event.type == pygame.QUIT:
+        #             done = True
+        #     if keys[pygame.K_q] and not prior_key_states[pygame.K_q]:
+        #         done = True
 
         if args.role != 'server_daemon':
             for event in pygame.event.get():
