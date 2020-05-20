@@ -1,4 +1,4 @@
-# Python!
+#!/usr/bin/python
 import math
 import csv
 import random
