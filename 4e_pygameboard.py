@@ -203,7 +203,7 @@ def push_to_server():
     # print "send_data", send_data
     compressed_send_data = bz2.compress(send_data)
     # print "compressed_send_data",compressed_send_data
-    print "sending data to", (HOST, HOST_PORT)
+    # print "sending data to", (HOST, HOST_PORT)
     sock.sendto(compressed_send_data, (HOST, HOST_PORT))
 
 
@@ -234,6 +234,7 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
             # if 1==1:
                 # print "trying to pop"
                 big_characters.pop(remove_entry)
+                print "removing guest", remove_entry,"at", time.ctime()
                 # print "should have popped"
             except:
                 # print "couldn't pop"
@@ -249,6 +250,10 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
             # print "--visitor", visitor
             # print "--Adding or updating character from client"
             # print ""
+            if visitor in big_characters.keys():
+                pass
+            else:
+                print "new guest from", client_IPaddress, "at", time.ctime()
             big_characters[visitor] = data["client_character"]
             big_characters[visitor]["time"] = timer
             big_characters[visitor]["IP"] = client_IPaddress
@@ -277,9 +282,9 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
                         # print "big_world[location_set] = set_to"
                         # print "big_world[location_set] =",
                         # print set_to
-                        print "working_position"
-                        print position
-                        print type(position)
+                        # print "working_position"
+                        # print position
+                        # print type(position)
                         # terrain = set_to
                         # print "terrain"
                         # print terrain
@@ -289,8 +294,8 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
                         if len(set_to) == 2:
                             terrain = (str(set_to[0])+","+str(set_to[1]),)
                             print terrain
-                        print terrain
-                        print type(terrain)
+                        # print terrain
+                        # print type(terrain)
 
                         c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
                         conn.commit()
