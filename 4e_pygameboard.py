@@ -84,6 +84,9 @@ mycharacter_initial = initial_dict[args.initial.upper()]
 
 # HOST = socket.gethostbyname('j-macbookpro.local')
 HOST = socket.gethostbyname('gameserver.local')
+hostname = socket.gethostname()
+CLIENT = socket.gethostbyname(hostname)
+
 HOST_PORT = 10996
 CLIENT_PORT = 10997
 NPC_PORT = 10998
@@ -200,8 +203,9 @@ def push_to_server():
     # print "send_data", send_data
     compressed_send_data = bz2.compress(send_data)
     # print "compressed_send_data",compressed_send_data
-    # print "sending client compressed pickled", compressed_send_data
+    print "sending data to", (HOST, HOST_PORT)
     sock.sendto(compressed_send_data, (HOST, HOST_PORT))
+
 
 
 
@@ -445,7 +449,7 @@ if __name__ == '__main__':  # single underscore
         server_threadC.daemon = True
         try:
             server_threadC.start()
-            print("Server started at {} port {}".format(HOST, CLIENT_PORT))
+            print("Server started at {} port {}".format(CLIENT, CLIENT_PORT))
         except (KeyboardInterrupt, SystemExit):
             serverC.shutdown()
             serverC.server_close()
@@ -576,10 +580,10 @@ if __name__ == '__main__':  # single underscore
         if args.role == 'client' or args.role == 'server':
             push_to_server()
 
-    if args.role != 'server_daemon':
-        clock.tick(10)
-    else:
-        time.sleep(.25)
+        if args.role != 'server_daemon':
+            clock.tick(10)
+        else:
+            time.sleep(.25)
 
         if args.role != 'server_daemon':
             prior_key_states = keys
