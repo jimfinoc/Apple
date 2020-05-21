@@ -17,6 +17,8 @@ parser.add_argument('-i', '--initial', type=str, default='0')
 parser.add_argument('-t', '--token', type=int, choices=xrange(0,8),default=6)
 parser.add_argument('-f', '--fullscreen', type=str, choices=["yes","no"],default="no")
 parser.add_argument('-r', '--role', type=str, choices=['server','client','server_daemon'], default='client')
+parser.add_argument('-u', '--userName', type=str, default=False)
+parser.add_argument('-c', '--characterName', type=str, default=False)
 args = parser.parse_args()
 
 if args.role != 'server_daemon':
@@ -707,6 +709,7 @@ if __name__ == '__main__':  # single underscore
 
 
             if (joystick_connected) and (time.time() - last_look_time > time_check):
+                direction = (0,0)
                 for button_number in range( joystick_connected.get_numbuttons() ):
                     if joystick_connected.get_button(button_number):
                         print "button_number",
@@ -714,26 +717,30 @@ if __name__ == '__main__':  # single underscore
                 for axes_number in range( joystick_connected.get_numaxes() ):
                     if joystick_connected.get_axis(axes_number):
                         pass
-                        # print "axes_number",
-                        # print axes_number
+                        print "axes_number",
+                        print axes_number,
+                        # direction joystick_connected.get_axis
+                        print joystick_connected.get_axis(axes_number)
                 for hats_number in range( joystick_connected.get_numhats() ):
                     if joystick_connected.get_axis(hats_number):
                         pass
                         # print "hats_number",
-                        # print hats_number
-                        # print joystick_connected.get_hat(hats_number)
-                        hat = joystick_connected.get_hat(hats_number)
-                        if (0,0) != hat:
+                        print hats_number
+                        print joystick_connected.get_hat(hats_number)
+                        direction = joystick_connected.get_hat(hats_number)
+                        if (0,0) != direction:
                             last_look_time = time.time()
+                    # else:
+                        # direction = (0,0)
 
-                        if hat[1] > 0:
-                            game_location = (game_location[0] , game_location[1]-1)
-                        elif hat[1] < 0:
-                            game_location = (game_location[0] , game_location[1]+1)
-                        if hat[0] > 0:
-                            game_location = (game_location[0] +1, game_location[1])
-                        elif hat[0] < 0:
-                            game_location = (game_location[0] -1, game_location[1])
+                if (direction[1] > 0):
+                    game_location = (game_location[0] , game_location[1]-1)
+                elif (direction[1] < 0):
+                    game_location = (game_location[0] , game_location[1]+1)
+                if (direction[0] > 0):
+                    game_location = (game_location[0] +1, game_location[1])
+                elif (direction[0] < 0):
+                    game_location = (game_location[0] -1, game_location[1])
 
 
 
