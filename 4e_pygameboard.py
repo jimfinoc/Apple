@@ -492,8 +492,8 @@ if __name__ == '__main__':  # single underscore
 
 
     print ""
-    print "pygame.display.Info() ::"
     if args.role != 'server_daemon':
+        print "pygame.display.Info() ::"
         print pygame.display.Info()
         if args.fullscreen.lower() == "yes":
             screen = pygame.display.set_mode(size,
