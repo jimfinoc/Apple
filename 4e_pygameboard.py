@@ -712,11 +712,12 @@ if __name__ == '__main__':  # single underscore
                 direction = (0,0)
                 for button_number in range( joystick_connected.get_numbuttons() ):
                     if joystick_connected.get_button(button_number):
-                        print "button_number",
-                        print button_number
+                        pass
+                        # print "button_number",
+                        # print button_number
                 for axes_number in range( joystick_connected.get_numaxes() ):
                     if joystick_connected.get_axis(axes_number):
-                        # pass
+                        pass
                         # print "axes_number",
                         # print axes_number,
                         # direction joystick_connected.get_axis
@@ -730,8 +731,8 @@ if __name__ == '__main__':  # single underscore
                     if joystick_connected.get_axis(hats_number):
                         pass
                         # print "hats_number",
-                        print hats_number
-                        print joystick_connected.get_hat(hats_number)
+                        # print hats_number
+                        # print joystick_connected.get_hat(hats_number)
                         direction = joystick_connected.get_hat(hats_number)
                         if (0,0) != direction:
                             last_look_time = time.time()
