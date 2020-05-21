@@ -721,7 +721,7 @@ if __name__ == '__main__':  # single underscore
                         # print axes_number,
                         # direction joystick_connected.get_axis
                         # print joystick_connected.get_axis(axes_number)
-                        direction = (joystick_connected.get_axis(0),joystick_connected.get_axis(1))
+                        direction = (joystick_connected.get_axis(0), - joystick_connected.get_axis(1))
                         if (0,0) != direction:
                             last_look_time = time.time()
 
