@@ -23,7 +23,7 @@ if args.role != 'server_daemon':
     import pygame
     import pygame.locals
 
-
+myrandomseed = random.uniform(0,10000000)
 
 initial_dict = {
     "0":0,
@@ -760,6 +760,7 @@ if __name__ == '__main__':  # single underscore
                 except:
                     screen.blit(graphic_memory[last_edit], (614, 25 ))
 
+            print "each_key,little_characters[each_key]"
             for each_key in little_characters:
                 try:
                     # print "one at a time"
@@ -774,10 +775,17 @@ if __name__ == '__main__':  # single underscore
                     my_character_details["char_token"] = mycharacter_token
                     my_character_details["char_initial"] = mycharacter_initial
                     # image = character_memory[little_world[location]]
-                    if some_char_token != mycharacter_token and some_font_memory != mycharacter_initial:
-                        if (abs(some_location[0]-game_location[0]) <= vision):
+                    print each_key,little_characters[each_key]
+                    # if some_char_token != mycharacter_token and some_font_memory != mycharacter_initial:
+                    if (abs(some_location[0]-game_location[0]) <= vision):
+                        if "seed" in little_characters[each_key].keys():
+                            if little_characters[each_key]["seed"] != myrandomseed:
+                                screen.blit(character_memory[some_char_token], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
+                                screen.blit(small_font_memory[some_font_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
+                        else:
                             screen.blit(character_memory[some_char_token], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
                             screen.blit(small_font_memory[some_font_memory], (center_x - 8+16 * (some_location[0]-game_location[0]), center_y - 8+16 * (some_location[1]-game_location[1])))
+
                 except:
                     pass
                 # screen.blit(small_font_memory[some_font_memory], (some_location[0]- 8+16, some_location[1]- 8+16))
@@ -786,9 +794,11 @@ if __name__ == '__main__':  # single underscore
             screen.blit(small_font_memory[mycharacter_initial], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
             # if args.role == "client":
             if 1==1:
+                print my_character_details
                 my_character_details["location"] = game_location
                 my_character_details["char_token"] = mycharacter_token
                 my_character_details["char_initial"] = mycharacter_initial
+                my_character_details["seed"] = myrandomseed
                 # my_character_details["address"]
                 # characters['127.0.0.1'] = {}
                 # characters['127.0.0.1']["location"] = game_location
