@@ -253,7 +253,7 @@ class ThreadedUDPRequestHandlerForServer(SocketServer.BaseRequestHandler):
             if visitor in big_characters.keys():
                 pass
             else:
-                print "new guest from", client_IPaddress, "at", time.ctime()
+                print "new guest," ,visitor, "," " from", client_IPaddress, "at", time.ctime()
             big_characters[visitor] = data["client_character"]
             big_characters[visitor]["time"] = timer
             big_characters[visitor]["IP"] = client_IPaddress
