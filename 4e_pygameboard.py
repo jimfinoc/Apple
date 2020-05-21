@@ -578,23 +578,22 @@ if __name__ == '__main__':  # single underscore
         first_pass = True
         mouse_buttons = (0,0,0)
         mouse_position = (0,0)
+        # working joystick
+        joystick_connected = False
+        pygame.joystick.init()
+        joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+        print joysticks
+        if len(joysticks) > 0:
+            joystick_connected = joysticks[0]
+        for each_joystick in joysticks:
+            each_joystick.init()
+            print "joystick name", each_joystick.get_name()
+            print "axes",each_joystick.get_numaxes()
+            print "buttons", each_joystick.get_numbuttons()
+            print "hats", each_joystick.get_numhats()
 
-    # print "press q to quit"
-    joystick_connected = False
-    pygame.joystick.init()
-    joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
-    print joysticks
-    if len(joysticks) > 0:
-        joystick_connected = joysticks[0]
-    for each_joystick in joysticks:
-        each_joystick.init()
-        print "joystick name", each_joystick.get_name()
-        print "axes",each_joystick.get_numaxes()
-        print "buttons", each_joystick.get_numbuttons()
-        print "hats", each_joystick.get_numhats()
-
-    print "joystick_connected",
-    print joystick_connected
+        print "joystick_connected",
+        print joystick_connected
 
     last_look_time = 0
 
