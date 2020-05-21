@@ -721,6 +721,7 @@ if __name__ == '__main__':  # single underscore
                         print axes_number,
                         # direction joystick_connected.get_axis
                         print joystick_connected.get_axis(axes_number)
+                        direction = (joystick_connected.get_axis(0),joystick_connected.get_axis(1))
                 for hats_number in range( joystick_connected.get_numhats() ):
                     if joystick_connected.get_axis(hats_number):
                         pass
