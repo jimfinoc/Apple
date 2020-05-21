@@ -114,6 +114,7 @@ little_characters = {}
 big_world = {}
 little_world = {}
 stuff = {}
+time_check = 0.5
 
 
 def load_tile_table(filename, width, height):
@@ -578,7 +579,25 @@ if __name__ == '__main__':  # single underscore
         mouse_buttons = (0,0,0)
         mouse_position = (0,0)
 
-    print "press q to quit"
+    # print "press q to quit"
+    joystick_connected = False
+    pygame.joystick.init()
+    joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+    print joysticks
+    if len(joysticks) > 0:
+        joystick_connected = joysticks[0]
+    for each_joystick in joysticks:
+        each_joystick.init()
+        print "joystick name", each_joystick.get_name()
+        print "axes",each_joystick.get_numaxes()
+        print "buttons", each_joystick.get_numbuttons()
+        print "hats", each_joystick.get_numhats()
+
+    print "joystick_connected",
+    print joystick_connected
+
+    last_look_time = 0
+
     while not done:
         # print "_______________begin_______________"
         if args.role == 'server' or args.role == 'server_daemon':
@@ -606,75 +625,120 @@ if __name__ == '__main__':  # single underscore
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
-            if keys[pygame.K_q] and not prior_key_states[pygame.K_q]:
-                done = True
-            if keys[pygame.K_c] and not prior_key_states[pygame.K_c]:
-                last_edit = (last_edit[0],)
-            if keys[pygame.K_UP] and not prior_key_states[pygame.K_UP]:
-                game_location = (game_location[0] , game_location[1]-1)
-            if keys[pygame.K_DOWN] and not prior_key_states[pygame.K_DOWN]:
-                game_location = (game_location[0] , game_location[1]+1)
-            if keys[pygame.K_LEFT] and not prior_key_states[pygame.K_LEFT]:
-                game_location = (game_location[0] -1, game_location[1])
-            if keys[pygame.K_RIGHT] and not prior_key_states[pygame.K_RIGHT]:
-                game_location = (game_location[0] +1, game_location[1])
-            if keys[pygame.K_d] and not prior_key_states[pygame.K_d]:
-                position = (str(game_location[0])+","+str(game_location[1]),)
-                my_command["delete"] = game_location
-            if keys[pygame.K_SPACE] and not prior_key_states[pygame.K_SPACE]:
-                position = (str(game_location[0])+","+str(game_location[1]),)
-                try:
-                    print "000"
-                    little_world[game_location] = (last_edit[0],last_edit[1])
-                except:
-                    little_world[game_location] = (last_edit[0],)
-                print "little_world[game_location]",
-                print little_world[game_location]
-                print "type(little_world[game_location])"
-                print type(little_world[game_location])
-                terrain = 0
-                #---------------------------check before writing to database
-                if type(little_world[game_location]) is tuple:
-                    print "111"
-                    print "tuple check"
-                    if len (little_world[game_location]) == 1:
+            if 1==1: #indent for keys
+                move = [0,0]
+                if keys[pygame.K_q] and not prior_key_states[pygame.K_q]:
+                    done = True
+                if keys[pygame.K_c] and not prior_key_states[pygame.K_c]:
+                    last_edit = (last_edit[0],)
+                # if keys[pygame.K_UP] and not prior_key_states[pygame.K_UP]:
+                if keys[pygame.K_UP] and (time.time() - last_look_time > time_check):
+                    move[1] -= 1
+                    # last_look_time = time.time()
+                    # game_location = (game_location[0] , game_location[1]-1)
+                # if keys[pygame.K_DOWN] and not prior_key_states[pygame.K_DOWN]:
+                if keys[pygame.K_DOWN] and (time.time() - last_look_time > time_check):
+                    move[1] += 1
+                    # last_look_time = time.time()
+                    # game_location = (game_location[0] , game_location[1]+1)
+                # if keys[pygame.K_LEFT] and not prior_key_states[pygame.K_LEFT]:
+                if keys[pygame.K_LEFT] and (time.time() - last_look_time > time_check):
+                    move[0] -= 1
+                    # last_look_time = time.time()
+                    # game_location = (game_location[0] -1, game_location[1])
+                # if keys[pygame.K_RIGHT] and not prior_key_states[pygame.K_RIGHT]:
+                if keys[pygame.K_RIGHT] and (time.time() - last_look_time > time_check):
+                    move[0] += 1
+                    # last_look_time = time.time()
+                    # game_location = (game_location[0] +1, game_location[1])
+                if keys[pygame.K_d] and not prior_key_states[pygame.K_d]:
+                    position = (str(game_location[0])+","+str(game_location[1]),)
+                    my_command["delete"] = game_location
+                if keys[pygame.K_SPACE] and not prior_key_states[pygame.K_SPACE]:
+                    position = (str(game_location[0])+","+str(game_location[1]),)
+                    try:
+                        print "000"
+                        little_world[game_location] = (last_edit[0],last_edit[1])
+                    except:
+                        little_world[game_location] = (last_edit[0],)
+                    print "little_world[game_location]",
+                    print little_world[game_location]
+                    print "type(little_world[game_location])"
+                    print type(little_world[game_location])
+                    terrain = 0
+                    #---------------------------check before writing to database
+                    if type(little_world[game_location]) is tuple:
+                        print "111"
+                        print "tuple check"
+                        if len (little_world[game_location]) == 1:
+                            terrain = (str(little_world[game_location][0]),)
+                            print "terrain in check 1"
+
+                        print "tuple check 2"
+                        if len (little_world[game_location]) == 2:
+                            print "222"
+                            terrain = (str(little_world[game_location][0])+","+str(little_world[game_location][1]),)
+                            print "terrain in check 2"
+
+                    elif type(little_world[game_location]) is int:
+                        print "int check"
                         terrain = (str(little_world[game_location][0]),)
-                        print "terrain in check 1"
+                        # terrain = (little_world[game_location],)
+                    # print position
+                    # if args.role == "server":
+                    #     print "333"
+                    #     print "trying to modify"
+                    #     print "terrain",
+                    #     print terrain
+                    #     print "type(terrain)"
+                    #     print type(terrain)
+                    #     print "terrain[0]",
+                    #     print terrain[0]
+                    #     c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
+                    #     conn.commit()
+                    # if args.role == "client":
+                    my_command["set_tile"] = {}
+                    my_command["set_tile"]["value"] = little_world[game_location]
+                    my_command["set_tile"]["location"] = game_location
 
-                    print "tuple check 2"
-                    if len (little_world[game_location]) == 2:
-                        print "222"
-                        terrain = (str(little_world[game_location][0])+","+str(little_world[game_location][1]),)
-                        print "terrain in check 2"
+                if [0,0] != move:
+                    last_look_time = time.time()
+                    game_location = (game_location[0] + move[0], game_location[1] + move[1])
 
-                elif type(little_world[game_location]) is int:
-                    print "int check"
-                    terrain = (str(little_world[game_location][0]),)
-                    # terrain = (little_world[game_location],)
-                # print position
-                # if args.role == "server":
-                #     print "333"
-                #     print "trying to modify"
-                #     print "terrain",
-                #     print terrain
-                #     print "type(terrain)"
-                #     print type(terrain)
-                #     print "terrain[0]",
-                #     print terrain[0]
-                #     c.execute("REPLACE INTO map VALUES (?,?)", (position[0],terrain[0],) )
-                #     conn.commit()
-                # if args.role == "client":
-                my_command["set_tile"] = {}
-                my_command["set_tile"]["value"] = little_world[game_location]
-                my_command["set_tile"]["location"] = game_location
-                # write completete
-            if pygame.mouse.get_focused():
-                mouse_buttons = pygame.mouse.get_pressed()
-                mouse_position = pygame.mouse.get_pos()
-                # print "mouse_buttons",
-                # print mouse_buttons
-                # print "mouse_position",
-                # print mouse_position
+
+
+            if (joystick_connected) and (time.time() - last_look_time > time_check):
+                for button_number in range( joystick_connected.get_numbuttons() ):
+                    if joystick_connected.get_button(button_number):
+                        print "button_number",
+                        print button_number
+                for axes_number in range( joystick_connected.get_numaxes() ):
+                    if joystick_connected.get_axis(axes_number):
+                        pass
+                        # print "axes_number",
+                        # print axes_number
+                for hats_number in range( joystick_connected.get_numhats() ):
+                    if joystick_connected.get_axis(hats_number):
+                        pass
+                        # print "hats_number",
+                        # print hats_number
+                        # print joystick_connected.get_hat(hats_number)
+                        hat = joystick_connected.get_hat(hats_number)
+                        if (0,0) != hat:
+                            last_look_time = time.time()
+
+                        if hat[1] > 0:
+                            game_location = (game_location[0] , game_location[1]-1)
+                        elif hat[1] < 0:
+                            game_location = (game_location[0] , game_location[1]+1)
+                        if hat[0] > 0:
+                            game_location = (game_location[0] +1, game_location[1])
+                        elif hat[0] < 0:
+                            game_location = (game_location[0] -1, game_location[1])
+
+
+
+
             xi = 0
             yi = 0
             # my_location_x, my_location_y = (10,10)
@@ -725,26 +789,33 @@ if __name__ == '__main__':  # single underscore
                     # screen.blit(graphic_memory[0], (600 , 100))
             # if first_pass:
                 # print "little_world",little_world
+            if 1==1: #indent for mouse
+                if pygame.mouse.get_focused():
+                    mouse_buttons = pygame.mouse.get_pressed()
+                    mouse_position = pygame.mouse.get_pos()
+                # print "mouse_buttons",
+                # print mouse_buttons
+                # print "mouse_position",
+                # print mouse_position
+                if mouse_buttons[0]:
+                    for each in mouse_terrain_lookup:
+                        if (mouse_position[0] > mouse_terrain_lookup[each][0]) and (mouse_position[0] < mouse_terrain_lookup[each][2]) and (mouse_position[1] > mouse_terrain_lookup[each][1]) and (mouse_position[1] < mouse_terrain_lookup[each][3]):
+                           last_edit = (each,)
+                           print "last_edit",
+                           print  last_edit
 
-            if mouse_buttons[0]:
-                for each in mouse_terrain_lookup:
-                    if (mouse_position[0] > mouse_terrain_lookup[each][0]) and (mouse_position[0] < mouse_terrain_lookup[each][2]) and (mouse_position[1] > mouse_terrain_lookup[each][1]) and (mouse_position[1] < mouse_terrain_lookup[each][3]):
-                       last_edit = (each,)
-                       print "last_edit",
-                       print  last_edit
+                for xi in range(0,bigX):
+                    for yi in range(0,5):
+                        screen.blit(object_memory[xi + yi * bigX], (startX + xi *spacing, startY + object_offset + yi *spacing))
+                        if first_pass:
+                            mouse_object_lookup[xi + yi * bigX] =  (startX + xi *spacing, startY + object_offset + yi *spacing , startX + xi *spacing + 16, startY + object_offset + yi * spacing + 16 )
 
-            for xi in range(0,bigX):
-                for yi in range(0,5):
-                    screen.blit(object_memory[xi + yi * bigX], (startX + xi *spacing, startY + object_offset + yi *spacing))
-                    if first_pass:
-                        mouse_object_lookup[xi + yi * bigX] =  (startX + xi *spacing, startY + object_offset + yi *spacing , startX + xi *spacing + 16, startY + object_offset + yi * spacing + 16 )
-
-            if mouse_buttons[0]:
-                for each in mouse_object_lookup:
-                    if (mouse_position[0] > mouse_object_lookup[each][0]) and (mouse_position[0] < mouse_object_lookup[each][2]) and (mouse_position[1] > mouse_object_lookup[each][1]) and (mouse_position[1] < mouse_object_lookup[each][3]):
-                       last_edit = (last_edit[0],each)
-                       print "checking objects"
-                       print last_edit
+                if mouse_buttons[0]:
+                    for each in mouse_object_lookup:
+                        if (mouse_position[0] > mouse_object_lookup[each][0]) and (mouse_position[0] < mouse_object_lookup[each][2]) and (mouse_position[1] > mouse_object_lookup[each][1]) and (mouse_position[1] < mouse_object_lookup[each][3]):
+                           last_edit = (last_edit[0],each)
+                           print "checking objects"
+                           print last_edit
             # if first_pass:
                 # print "mouse_terrain_lookup",
                 # print mouse_terrain_lookup
@@ -760,7 +831,7 @@ if __name__ == '__main__':  # single underscore
                 except:
                     screen.blit(graphic_memory[last_edit], (614, 25 ))
 
-            print "each_key,little_characters[each_key]"
+            # print "each_key,little_characters[each_key]"
             for each_key in little_characters:
                 try:
                     # print "one at a time"
@@ -775,7 +846,7 @@ if __name__ == '__main__':  # single underscore
                     my_character_details["char_token"] = mycharacter_token
                     my_character_details["char_initial"] = mycharacter_initial
                     # image = character_memory[little_world[location]]
-                    print each_key,little_characters[each_key]
+                    # print each_key,little_characters[each_key]
                     # if some_char_token != mycharacter_token and some_font_memory != mycharacter_initial:
                     if (abs(some_location[0]-game_location[0]) <= vision):
                         if "seed" in little_characters[each_key].keys():
@@ -794,7 +865,7 @@ if __name__ == '__main__':  # single underscore
             screen.blit(small_font_memory[mycharacter_initial], (center_x - 8+16 *  0, center_y - 8+16 *  0)) # 0
             # if args.role == "client":
             if 1==1:
-                print my_character_details
+                # print my_character_details
                 my_character_details["location"] = game_location
                 my_character_details["char_token"] = mycharacter_token
                 my_character_details["char_initial"] = mycharacter_initial
