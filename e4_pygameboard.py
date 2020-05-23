@@ -519,7 +519,7 @@ if __name__ == '__main__':  # single underscore
         print "/16"
         print (z[0]/16,z[1]/16)
         # land_tiles = load_tile_table("land_tiles.png", 16, 16)
-        land_tiles = load_tile_table("terrain4.png", 16, 16)
+        land_tiles = load_tile_table("terrain5.png", 16, 16)
         graphic_memory = {}
         for x, row in enumerate(land_tiles):
             for y, tile in enumerate(row):
@@ -551,7 +551,7 @@ if __name__ == '__main__':  # single underscore
         object_memory = {}
         for x, row in enumerate(object_tiles):
             for y, tile in enumerate(row):
-                object_memory[y*8+x] = tile
+                object_memory[y*16+x] = tile
         print "object_memory loaded", len(object_memory), "sprites."
 
 
