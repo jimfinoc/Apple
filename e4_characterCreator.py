@@ -131,8 +131,8 @@ def main():
         print "/----------------------------------------------------------------"
         print "| 1.  manually create a new character"
         print "|[2]. auto create a character with random values and display JSON."
-        # print "| 3.  auto create a character with random values and save JSON to text."
-        # print "| 4.  auto create a character with random values and save to database."
+        print "| 3.  auto create a character with random values and save JSON to text."
+        print "| 4.  auto create a character with random values and save to database."
         print "|"
         # print "/------------------attributeValues-------------------------------"
         print "/----------------------------------------------------------------"
@@ -727,6 +727,7 @@ def main():
                             "left_hand":None},
                             "armor_Proficiencies":armorProficiencies,
                             "weapon_Proficiencies":weaponProficiencies,
+                        "race":args.character_race,
                         # "attack_details":
                             # {"weapon_name": "unarmed", "complexity": "simple", "type": "melee", "damage_die": "1d3", "damage_type": "non-leathal", "weight": "0"}
                             # {"unarmed":"1d4"}
