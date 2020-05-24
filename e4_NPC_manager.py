@@ -42,31 +42,59 @@ NPC_PORT = 10998
 
 data = {}
 
+# data["NPC1"] = {
+#                'char_initial': 28,
+#                'char_token': 8,
+#                'location': (-1, 0),
+# }
+# data["NPC2"] = {
+#                'char_initial': 29,
+#                'char_token': 9,
+#                'location': (0, 0),
+# }
+# data["NPC3"] = {
+#                'char_initial': 29,
+#                'char_token': 10,
+#                'location': (-1, 1),
+# }
+# data["NPC4"] = {
+#                'char_initial': 29,
+#                'char_token': 11,
+#                'location': (0, 1),
+# }
+
 data["NPC1"] = {
-               'char_initial': 28,
-               'char_token': 8,
+               'char_initial': 1, # number 1
+               'char_token': 1, # enemy
                'location': (-1, 0),
 }
 data["NPC2"] = {
-               'char_initial': 29,
-               'char_token': 9,
+               'char_initial': 2,
+               'char_token': 1,# enemy
                'location': (0, 0),
 }
-data["NPC3"] = {
-               'char_initial': 29,
-               'char_token': 10,
-               'location': (-1, 1),
+
+data["Innkeeper"] = {
+               'char_initial': " ", # number 1
+               'char_token': 4,
+               'location': (4, 11),
 }
-data["NPC4"] = {
-               'char_initial': 29,
-               'char_token': 11,
-               'location': (0, 1),
+data["Armorer"] = {
+               'char_initial': " ", # number 1
+               'char_token': 4,
+               'location': (0, 23),
 }
-data["NPC5"] = {
-               'char_initial': 29,
-               'char_token': 1,
-               'location': (3, 3),
+data["Smith"] = {
+               'char_initial': " ", # number 1
+               'char_token': 4,
+               'location': (13, 23),
 }
+data["Sexton"] = {
+               'char_initial': " ", # number 1
+               'char_token': 4,
+               'location': (4, 2),
+}
+
 
 def push_to_server():
     global data

@@ -17,6 +17,10 @@ parser.add_argument('-i', '--initial', type=str, default='0')
 parser.add_argument('-t', '--token', type=int, choices=xrange(0,8),default=6)
 parser.add_argument('-f', '--fullscreen', type=str, choices=["yes","no"],default="no")
 parser.add_argument('-r', '--role', type=str, choices=['server','client','server_daemon'], default='client')
+parser.add_argument('-u', '--userName', type=str, default=False)
+parser.add_argument('-c', '--characterName', type=str, default=False)
+parser.add_argument('-m', '--gameMode', type=str, choices=['terrain_edit','character_creator','game'], default='terrain_edit')
+
 args = parser.parse_args()
 
 if args.role != 'server_daemon':
@@ -517,7 +521,7 @@ if __name__ == '__main__':  # single underscore
         print "/16"
         print (z[0]/16,z[1]/16)
         # land_tiles = load_tile_table("land_tiles.png", 16, 16)
-        land_tiles = load_tile_table("terrain4.png", 16, 16)
+        land_tiles = load_tile_table("terrain5.png", 16, 16)
         graphic_memory = {}
         for x, row in enumerate(land_tiles):
             for y, tile in enumerate(row):
@@ -549,7 +553,7 @@ if __name__ == '__main__':  # single underscore
         object_memory = {}
         for x, row in enumerate(object_tiles):
             for y, tile in enumerate(row):
-                object_memory[y*8+x] = tile
+                object_memory[y*20+x] = tile
         print "object_memory loaded", len(object_memory), "sprites."
 
 
@@ -653,17 +657,18 @@ if __name__ == '__main__':  # single underscore
                 if keys[pygame.K_d] and not prior_key_states[pygame.K_d]:
                     position = (str(game_location[0])+","+str(game_location[1]),)
                     my_command["delete"] = game_location
-                if keys[pygame.K_SPACE] and not prior_key_states[pygame.K_SPACE]:
+                # if keys[pygame.K_SPACE] and not prior_key_states[pygame.K_SPACE]:
+                if keys[pygame.K_SPACE] and args.gameMode == 'terrain_edit':
                     position = (str(game_location[0])+","+str(game_location[1]),)
                     try:
-                        print "000"
+                        # print "000"
                         little_world[game_location] = (last_edit[0],last_edit[1])
                     except:
                         little_world[game_location] = (last_edit[0],)
-                    print "little_world[game_location]",
-                    print little_world[game_location]
-                    print "type(little_world[game_location])"
-                    print type(little_world[game_location])
+                    # print "little_world[game_location]",
+                    # print little_world[game_location]
+                    # print "type(little_world[game_location])"
+                    # print type(little_world[game_location])
                     terrain = 0
                     #---------------------------check before writing to database
                     if type(little_world[game_location]) is tuple:
@@ -707,33 +712,44 @@ if __name__ == '__main__':  # single underscore
 
 
             if (joystick_connected) and (time.time() - last_look_time > time_check):
+                direction = (0,0)
                 for button_number in range( joystick_connected.get_numbuttons() ):
                     if joystick_connected.get_button(button_number):
-                        print "button_number",
-                        print button_number
+                        pass
+                        # print "button_number",
+                        # print button_number
                 for axes_number in range( joystick_connected.get_numaxes() ):
                     if joystick_connected.get_axis(axes_number):
                         pass
                         # print "axes_number",
-                        # print axes_number
+                        # print axes_number,
+                        # direction joystick_connected.get_axis
+                        # print joystick_connected.get_axis(axes_number)
+                        direction = (joystick_connected.get_axis(0), - joystick_connected.get_axis(1))
+                        if (0,0) != direction:
+                            last_look_time = time.time()
+
+
                 for hats_number in range( joystick_connected.get_numhats() ):
                     if joystick_connected.get_axis(hats_number):
                         pass
                         # print "hats_number",
                         # print hats_number
                         # print joystick_connected.get_hat(hats_number)
-                        hat = joystick_connected.get_hat(hats_number)
-                        if (0,0) != hat:
+                        direction = joystick_connected.get_hat(hats_number)
+                        if (0,0) != direction:
                             last_look_time = time.time()
+                    # else:
+                        # direction = (0,0)
 
-                        if hat[1] > 0:
-                            game_location = (game_location[0] , game_location[1]-1)
-                        elif hat[1] < 0:
-                            game_location = (game_location[0] , game_location[1]+1)
-                        if hat[0] > 0:
-                            game_location = (game_location[0] +1, game_location[1])
-                        elif hat[0] < 0:
-                            game_location = (game_location[0] -1, game_location[1])
+                if (direction[1] > 0):
+                    game_location = (game_location[0] , game_location[1]-1)
+                elif (direction[1] < 0):
+                    game_location = (game_location[0] , game_location[1]+1)
+                if (direction[0] > 0):
+                    game_location = (game_location[0] +1, game_location[1])
+                elif (direction[0] < 0):
+                    game_location = (game_location[0] -1, game_location[1])
 
 
 
@@ -777,60 +793,68 @@ if __name__ == '__main__':  # single underscore
 
             bigX = 8
             spacing = 16 + 2
-            startX = 550
-            startY = 50
+            leftStartX = 110-16
+            rightStartX = 720-170
+            startY = 2
             object_offset = 140
-            for xi in range(0,bigX):
-                for yi in range(0,7):
-                    screen.blit(graphic_memory[xi + yi * bigX], (startX + xi *spacing,startY + yi *spacing))
-                    if first_pass:
-                        mouse_terrain_lookup[xi + yi * bigX] =  (startX + xi *spacing, startY + yi *spacing, startX + xi *spacing + 16, startY + yi *spacing+ 16)
-                    # screen.blit(graphic_memory[0], (600 , 100))
-            # if first_pass:
-                # print "little_world",little_world
-            if 1==1: #indent for mouse
-                if pygame.mouse.get_focused():
-                    mouse_buttons = pygame.mouse.get_pressed()
-                    mouse_position = pygame.mouse.get_pos()
-                # print "mouse_buttons",
-                # print mouse_buttons
-                # print "mouse_position",
-                # print mouse_position
-                if mouse_buttons[0]:
-                    for each in mouse_terrain_lookup:
-                        if (mouse_position[0] > mouse_terrain_lookup[each][0]) and (mouse_position[0] < mouse_terrain_lookup[each][2]) and (mouse_position[1] > mouse_terrain_lookup[each][1]) and (mouse_position[1] < mouse_terrain_lookup[each][3]):
-                           last_edit = (each,)
-                           print "last_edit",
-                           print  last_edit
 
+# this is for designer mode
+
+#---Showcase the terrain tiles
+            if args.gameMode == 'terrain_edit':
                 for xi in range(0,bigX):
-                    for yi in range(0,5):
-                        screen.blit(object_memory[xi + yi * bigX], (startX + xi *spacing, startY + object_offset + yi *spacing))
+                    for yi in range(0,7):
+                        screen.blit(graphic_memory[xi + yi * bigX], (rightStartX + xi *spacing,startY + yi *spacing))
                         if first_pass:
-                            mouse_object_lookup[xi + yi * bigX] =  (startX + xi *spacing, startY + object_offset + yi *spacing , startX + xi *spacing + 16, startY + object_offset + yi * spacing + 16 )
+                            mouse_terrain_lookup[xi + yi * bigX] =  (rightStartX + xi *spacing, startY + yi *spacing, rightStartX + xi *spacing + 16, startY + yi *spacing+ 16)
+                        # screen.blit(graphic_memory[0], (600 , 100))
+                # if first_pass:
+                    # print "little_world",little_world
+                if 1==1: #indent for mouse
+                    if pygame.mouse.get_focused():
+                        mouse_buttons = pygame.mouse.get_pressed()
+                        mouse_position = pygame.mouse.get_pos()
+                    # print "mouse_buttons",
+                    # print mouse_buttons
+                    # print "mouse_position",
+                    # print mouse_position
+                    if mouse_buttons[0]:
+                        for each in mouse_terrain_lookup:
+                            if (mouse_position[0] > mouse_terrain_lookup[each][0]) and (mouse_position[0] < mouse_terrain_lookup[each][2]) and (mouse_position[1] > mouse_terrain_lookup[each][1]) and (mouse_position[1] < mouse_terrain_lookup[each][3]):
+                               last_edit = (each,)
+                               print "last_edit",
+                               print  last_edit
+    #---Showcase the object tiles
 
-                if mouse_buttons[0]:
-                    for each in mouse_object_lookup:
-                        if (mouse_position[0] > mouse_object_lookup[each][0]) and (mouse_position[0] < mouse_object_lookup[each][2]) and (mouse_position[1] > mouse_object_lookup[each][1]) and (mouse_position[1] < mouse_object_lookup[each][3]):
-                           last_edit = (last_edit[0],each)
-                           print "checking objects"
-                           print last_edit
-            # if first_pass:
-                # print "mouse_terrain_lookup",
-                # print mouse_terrain_lookup
-                # print "mouse_object_lookup",
-                # print mouse_object_lookup
+                    for xi in range(0,bigX):
+                        for yi in range(0,10):
+                            screen.blit(object_memory[xi + yi * bigX], (rightStartX + xi *spacing, startY + object_offset + yi *spacing))
+                            if first_pass:
+                                mouse_object_lookup[xi + yi * bigX] =  (rightStartX + xi *spacing, startY + object_offset + yi *spacing , rightStartX + xi *spacing + 16, startY + object_offset + yi * spacing + 16 )
 
-            try:
-                screen.blit(graphic_memory[last_edit[0]], (614, 25 ))
-                screen.blit(object_memory[last_edit[1]], (614, 25 ))
-            except:
+                    if mouse_buttons[0]:
+                        for each in mouse_object_lookup:
+                            if (mouse_position[0] > mouse_object_lookup[each][0]) and (mouse_position[0] < mouse_object_lookup[each][2]) and (mouse_position[1] > mouse_object_lookup[each][1]) and (mouse_position[1] < mouse_object_lookup[each][3]):
+                               last_edit = (last_edit[0],each)
+                               print "checking objects"
+                               print last_edit
+                # if first_pass:
+                    # print "mouse_terrain_lookup",
+                    # print mouse_terrain_lookup
+                    # print "mouse_object_lookup",
+                    # print mouse_object_lookup
+
                 try:
-                    screen.blit(graphic_memory[last_edit[0]], (614, 25 ))
+                    screen.blit(graphic_memory[last_edit[0]], (leftStartX, 25 ))
+                    screen.blit(object_memory[last_edit[1]], (leftStartX, 25 ))
                 except:
-                    screen.blit(graphic_memory[last_edit], (614, 25 ))
+                    try:
+                        screen.blit(graphic_memory[last_edit[0]], (leftStartX, 25 ))
+                    except:
+                        screen.blit(graphic_memory[last_edit], (leftStartX, 25 ))
 
-            # print "each_key,little_characters[each_key]"
+                # print "each_key,little_characters[each_key]"
+# end terrain editor mode
             for each_key in little_characters:
                 try:
                     # print "one at a time"
