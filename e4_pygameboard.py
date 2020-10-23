@@ -87,7 +87,12 @@ mycharacter_initial = initial_dict[args.initial.upper()]
 # print ".role", args.role
 
 # HOST = socket.gethostbyname('j-macbookpro.local')
-HOST = socket.gethostbyname('gameserver.local')
+if args.role == "client":
+    HOST = socket.gethostbyname('gameserver.local')
+else:
+    hostname = socket.gethostname()
+    HOST = socket.gethostbyname(hostname)
+
 hostname = socket.gethostname()
 CLIENT = socket.gethostbyname(hostname)
 
